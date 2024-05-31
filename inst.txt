@@ -1,0 +1,13 @@
+django-admin startproject enhanced_gpt
+python manage.py startapp gptApp
+
+
+
+this is found in views.py
+Here's a brief overview of what the request object provides:
+
+request.method: The HTTP method used in the request (e.g., 'GET', 'POST').
+request.GET: A dictionary-like object containing query parameters from the URL.
+request.POST: A dictionary-like object containing POST data from the request body.
+request.FILES: A dictionary-like object containing uploaded files.
+request.session: A dictionary-like object representing the current session (if sessions are enabled).
