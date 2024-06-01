@@ -20,13 +20,13 @@
                   <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                       <li class="nav-item">
-                        <a class="nav-link active" aria-current="page">Chat</a>
+                        <a class="nav-link" href="{% url 'index' %}">Chat</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url 'image-gen' %}">Generate Images</a>
+                        <a class="nav-link"  href="{% url 'image-gen' %}">Generate Images</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url 'pdf-reader' %}">PDF Reader</a>
+                        <a class="nav-link active" aria-current="page">PDF Reader</a>
                       </li>
                       <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -38,7 +38,7 @@
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#">Contact us</a></li>
                       </ul>
-                        
+
                       </li>
                     </ul>
                       <div class="dropdown" style="padding-left: 10px; padding-top: 10px;">
@@ -46,8 +46,8 @@
                           New Chat
                         </button>
                         <ul class="dropdown-menu">
-                          <li><a class="dropdown-item">New Chat</a></li>
-                          <li><a class="dropdown-item" href="{% url 'chat-history' %}">History</a></li>
+                          <li><a class="dropdown-item" href="{% url 'pdf-reader' %}">New Chat</a></li>
+                          <li><a class="dropdown-item">History</a></li>
                         </ul>
                       </div>
                   </div>
@@ -57,39 +57,50 @@
     </header>
     <div style="display: flex; height: 100vh;">
         <div id="sidebar">
-            <div class="dropdown mb-4">
-              <label for="select-model-button" class="item align-left">Select Model</label><br>
-              <button id='select-model-button' class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                GPT-3.5-turbo
-              </button>
-              <ul class="dropdown-menu">
-                <li class="dropdown-item" onclick="setModel(this)">GPT-3.5-turbo</li>
-                <li class="dropdown-item" onclick="setModel(this)">GPT-4o</li>
-                <li class="dropdown-item" onclick="setModel(this)">GPT-4-turbo</li>
-                <li class="dropdown-item" onclick="setModel(this)">GPT-4</li>
-              </ul>
-            </div>
-            <div class="slider-container-tokens">
-            <label for="slider-tokens">Tokens value:</label>
-            <input type="range" id="slider-tokens" name="slider-tokens" min="0" max="4000" value="2000" onchange="updateSliderValuesTokens(this.id, this.value, this.max)">
-            <p>Value: <span id="sliderValue">2000/4000</span></p>
-            </div>
-            <div class="slider-container-temperature">
-            <label for="slider-tokens">Temperature :</label>
-            <input type="range" id="slider-temp" name="slider-tokens" min="0" max="1" value="0.5" step="0.01" onchange="updateSliderValuesTemperature(this.id, this.value, this.max)">
-            <p>Value: <span id="sliderVal">0.05/1</span></p>
-            </div>
-            <div class="role-input" style="padding-left: 10px; padding-top: 10px;">
-                <label for="role-input">Enter the role</label>
-                <input type="text" id="role-input" name="role-input" onkeydown="updateRole(event, this.value)">
-                <p>Current Role: <b><span id="role-info">Helpful Assistant</span></b></p>
-            </div>
-            <div>
-                <h6><input type="checkbox" id="remember-context" onclick="rememberContext(this.check)" checked>
-                <label for="remember-context">  Remember Context</label></h6>
-                <h6><input type="checkbox" id="stream" onclick="setStream(this.check)" checked>
-                <label for="stream">Stream</label></h6>
-            </div>
+            <ul id="file-select-sidebar">
+          <li>18-3-2024</li>
+          <li>19-3-2024</li>
+          <li>20-3-2024</li>
+          <li>21-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+          <li>22-3-2024</li>
+        </ul>
 
         </div>
       <div style="width: 80%; padding-top: 80px;">
@@ -104,7 +115,7 @@
       </div>
       </div>
     </div>
-        
+
     <script src="{% static 'gptApp/js/bootstrap.bundle.min.js' %}">
       function openWebsite(websiteURL) {
             window.open("history.html", '_');
@@ -112,7 +123,10 @@
     </script>
 
   <script src="{% static 'gptApp/js/script.js' %}">
-          
+
   </script>
 </body>
 </html>
+
+
+

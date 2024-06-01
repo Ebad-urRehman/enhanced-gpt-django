@@ -17,13 +17,14 @@
                   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                   </button>
+
                   <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                       <li class="nav-item">
-                        <a class="nav-link active" aria-current="page">Chat</a>
+                        <a class="nav-link" href="{% url 'index' %}">Chat</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url 'image-gen' %}">Generate Images</a>
+                        <a class="nav-link active" aria-current="page">Generate Images</a>
                       </li>
                       <li class="nav-item">
                         <a class="nav-link" href="{% url 'pdf-reader' %}">PDF Reader</a>
@@ -38,7 +39,7 @@
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#">Contact us</a></li>
                       </ul>
-                        
+
                       </li>
                     </ul>
                       <div class="dropdown" style="padding-left: 10px; padding-top: 10px;">
@@ -47,7 +48,7 @@
                         </button>
                         <ul class="dropdown-menu">
                           <li><a class="dropdown-item">New Chat</a></li>
-                          <li><a class="dropdown-item" href="{% url 'chat-history' %}">History</a></li>
+                          <li><a class="dropdown-item" href="{% url 'image-gen-his' %}">History</a></li>
                         </ul>
                       </div>
                   </div>
@@ -60,13 +61,11 @@
             <div class="dropdown mb-4">
               <label for="select-model-button" class="item align-left">Select Model</label><br>
               <button id='select-model-button' class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                GPT-3.5-turbo
+                Dall-E 2
               </button>
               <ul class="dropdown-menu">
-                <li class="dropdown-item" onclick="setModel(this)">GPT-3.5-turbo</li>
-                <li class="dropdown-item" onclick="setModel(this)">GPT-4o</li>
-                <li class="dropdown-item" onclick="setModel(this)">GPT-4-turbo</li>
-                <li class="dropdown-item" onclick="setModel(this)">GPT-4</li>
+                <li class="dropdown-item" onclick="setImageModel(this)">Dall-E 3</li>
+                <li class="dropdown-item" onclick="setImageModel(this)">Dall-E 2</li>
               </ul>
             </div>
             <div class="slider-container-tokens">
@@ -99,12 +98,12 @@
           <input id="file-input-element" type="file">
           <button id="file-input-button" onmousedown="inputFile()"><img id="file-input-image" src="{% static 'gptApp/images/file.png' %}" alt="file-input-button"></button>
           <textarea id="prompt-text-area" onkeydown="sendThroughCtrlEnter(event, this.value)"></textarea>
-          <button id="submit-button" onmousedown="sendThroughClick()"><img id="submit-image" src="{% static 'gptApp/images/send-blue.png' %}" alt="prompt button"></button>
+              <button id="submit-button" onmousedown="sendThroughClick()"><img id="submit-image" src="{% static 'gptApp/images/send-blue.png' %}" alt="prompt button"></button>
           </div>
       </div>
       </div>
     </div>
-        
+
     <script src="{% static 'gptApp/js/bootstrap.bundle.min.js' %}">
       function openWebsite(websiteURL) {
             window.open("history.html", '_');
@@ -112,7 +111,7 @@
     </script>
 
   <script src="{% static 'gptApp/js/script.js' %}">
-          
+
   </script>
 </body>
 </html>

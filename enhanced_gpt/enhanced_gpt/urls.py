@@ -21,5 +21,11 @@ from gptApp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='index')
+    path('', views.index, name='index'),
+    path('imageGenerator/', views.image_generator, name="image-gen"),
+    path('history/', views.chat_history, name="chat-history"),
+    path('imageGenerator/history/', views.image_generator_history, name="image-gen-his"),
+    path('pdfReader/', views.pdf_reader, name="pdf-reader"),
+    path('pdfReader/history', views.pdf_reader_history, name="pdf-reader-his"),
+
 ]

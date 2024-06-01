@@ -40,13 +40,18 @@ function sendThroughCtrlEnter(event, user_prompt) {
         if (event.ctrlKey && event.key ==='Enter') {
             prompt = user_prompt;
             console.log(prompt);
+            document.getElementById('prompt-text-area').value = "";
+            promptResponseList.append(prompt);
         }
     }
 }
 
+promptResponseList = []
 function sendThroughClick() {
     prompt = document.getElementById('prompt-text-area').value;
-    console.log(prompt);
+    document.getElementById('prompt-text-area').value = "";
+    promptResponseList.append(prompt);
+    console.log(prompt)
 }
 
 function inputFile() {
@@ -91,6 +96,19 @@ function setModel(model) {
     else if (model.textContent === 'GPT-4o') {
         selectedModel = 'gpt-4o';
         document.getElementById('select-model-button').textContent = "GPT-4o"
+    }
+    console.log(selectedModel)
+}
+
+var selectedImageModel = 'Dall-E 2';
+function setImageModel(model) {
+    if (model.textContent === 'Dall-E 2') {
+        selectedModel = 'dall-e-2';
+        document.getElementById('select-model-button').textContent = "Dall-E 2";
+    }
+    else if (model.textContent === 'Dall-E 3') {
+        selectedModel = 'dall-e-2';
+        document.getElementById('select-model-button').textContent = "Dall-E 3";
     }
     console.log(selectedModel)
 }
