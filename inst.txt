@@ -11,3 +11,6 @@ request.GET: A dictionary-like object containing query parameters from the URL.
 request.POST: A dictionary-like object containing POST data from the request body.
 request.FILES: A dictionary-like object containing uploaded files.
 request.session: A dictionary-like object representing the current session (if sessions are enabled).
+
+
+seed parameters

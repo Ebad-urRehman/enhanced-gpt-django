@@ -93,8 +93,18 @@
 
         </div>
       <div style="width: 80%; padding-top: 80px;">
-        <div style="justify-content: center; width: 100%; display: flex; flex-direction: column; text-align: center;">
-          <h1>Enhanced GPT</h1>
+        <div style="justify-content: center; width: 100%; display: flex; text-align: center;">
+          <div style="width:80%; align-self:center;">
+            <h1>Enhanced GPT</h1>
+              <div id="prompt-responses">
+              <div class="prompt-div">
+                <p class="prompt">Prompt</p>
+              </div>
+              <div class="response-div">
+                <p class="response">response</p>
+              </div>
+              </div>
+          </div>
           <div id="fixed-at-bottom">
           <input id="file-input-element" type="file">
           <button id="file-input-button" onmousedown="inputFile()"><img id="file-input-image" src="{% static 'gptApp/images/file.png' %}" alt="file-input-button"></button>

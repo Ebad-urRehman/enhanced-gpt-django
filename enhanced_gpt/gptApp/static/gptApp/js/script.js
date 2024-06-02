@@ -15,14 +15,15 @@ console.log(chatHistoryNo[0])
 
 //sliderID = document.getElementById("slider-tokens");
 //sliderValueText = document.getElementById("sliderValue");
+tokens = 2000;
 function updateSliderValuesTokens(sliderId, sliderValueText, maxValue) {
        document.getElementById('sliderValue').textContent = sliderValueText + '/' + maxValue;
-       return sliderValueText;
+       tokens = document.getElementById('sliderValue').textContent;
 };
 
 function updateSliderValuesTemperature(sliderId, sliderValueText, maxValue) {
        document.getElementById('sliderVal').textContent = sliderValueText + '/' + maxValue;
-       return sliderValueText;
+       tokens = document.getElementById('sliderVal').textContent;
 };
 
 var role = 'helpful assistant'
@@ -34,25 +35,109 @@ function updateRole(event, roleText) {
         document.getElementById('role-input').value = "";
     }
 }
-var prompt = ''
+
+promptResponseList = []
+
+var prompt = '';
+response_no = 0;
+
 function sendThroughCtrlEnter(event, user_prompt) {
     if (user_prompt != undefined && user_prompt !== '') {
         if (event.ctrlKey && event.key ==='Enter') {
             prompt = user_prompt;
             console.log(prompt);
             document.getElementById('prompt-text-area').value = "";
-            promptResponseList.append(prompt);
+            promptResponseList.push(prompt);
+            response = "Walaikum As Salam" // func call here
+            response_no += 1;
+            promptResponseList.push({"response_no": response_no, "prompt": prompt, "response": response})
+            console.log(promptResponseList)
+            // Create FormData object and append variables
+            const dataToSend = new FormData();
+            dataToSend.append('prompt', prompt);
+            dataToSend.append('stream', stream);
+            dataToSend.append('tokens', tokens);
+            dataToSend.append('model', selectedModel);
+            dataToSend.append('remember_context', rememberContext);
+
+            // Send data using Fetch API
+            fetch('/receive-data/', {
+                method: 'POST',
+                body: dataToSend
+            })
+            .then(response => response.json())
+            .then(data => console.log('Success:', data))
+            .catch(error => console.error('Error:', error));
+
+            console.log(prompt);
+
+            const container = document.getElementById('prompt-responses');
+
+            promptResponseList.forEach(promptResponse => {
+                // Create a new div element for prompt
+                const promptDiv = document.createElement('div');
+                promptDiv.classList.add('prompt-div');
+
+                // Create a new paragraph element for the prompt text
+                const promptPara = document.createElement('p');
+                promptPara.classList.add('prompt');
+                promptPara.textContent = promptResponse.prompt;
+
+                // Append the paragraph to the prompt div
+                promptDiv.appendChild(promptPara);
+
+                // Create a new div element for response
+                const responseDiv = document.createElement('div');
+                responseDiv.classList.add('response-div');
+
+                // Create a new paragraph element for the response text
+                const responsePara = document.createElement('p');
+                responsePara.classList.add('response');
+                responsePara.textContent = promptResponse.response;
+
+                // Append the paragraph to the response div
+                responseDiv.appendChild(responsePara);
+
+                // Append both prompt and response divs to the container
+                container.appendChild(promptDiv);
+                container.appendChild(responseDiv);
+            });
         }
     }
 }
 
-promptResponseList = []
+
+//function sendThroughClick() {
+//    prompt = document.getElementById('prompt-text-area').value;
+//    document.getElementById('prompt-text-area').value = "";
+//    promptResponseList.append(prompt);
+//    console.log(prompt)
+//}
+
 function sendThroughClick() {
-    prompt = document.getElementById('prompt-text-area').value;
-    document.getElementById('prompt-text-area').value = "";
-    promptResponseList.append(prompt);
-    console.log(prompt)
-}
+            const prompt = document.getElementById('prompt-text-area').value;
+            promptResponseList.push(prompt);
+            document.getElementById('prompt-text-area').value = "";
+
+            // Create FormData object and append variables
+            const dataToSend = new FormData();
+            dataToSend.append('prompt', prompt);
+            dataToSend.append('stream', stream);
+            dataToSend.append('tokens', tokens);
+            dataToSend.append('model', selectedModel);
+            dataToSend.append('remember_context', rememberContext);
+
+            // Send data using Fetch API
+            fetch('/receive-data/', {
+                method: 'POST',
+                body: dataToSend
+            })
+            .then(response => response.json())
+            .then(data => console.log('Success:', data))
+            .catch(error => console.error('Error:', error));
+
+            console.log(prompt);
+        }
 
 function inputFile() {
     console.log('working');
@@ -112,3 +197,20 @@ function setImageModel(model) {
     }
     console.log(selectedModel)
 }
+
+
+//document.addEventListener('DOMContentLoaded', function() {
+//            document.getElementById('sendDataButton').addEventListener('click', function() {
+//                const dataToSend = new FormData();
+//                dataToSend.append('variable1', 'value1');
+//                dataToSend.append('variable2', 'value2');
+//
+//                fetch('/receive-data/', {
+//                    method: 'POST',
+//                    body: dataToSend
+//                })
+//                .then(response => response.json())
+//                .then(data => console.log('Success:', data))
+//                .catch(error => console.error('Error:', error));
+//            });
+//        });

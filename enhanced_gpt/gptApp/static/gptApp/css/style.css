@@ -97,3 +97,26 @@
 .slider-container {
     margin:50px;
 }
+
+.prompt {
+    background-color: gray;
+    color: white;
+    padding-right:15px;
+
+}
+
+.prompt-div {
+    self-align: right;
+    text-align:right;
+}
+
+.response {
+    background-color: aquamarine;
+    color: black;
+    padding-left:15px;
+}
+
+.response-div {
+    self-align: left;
+    text-align: left;
+}
