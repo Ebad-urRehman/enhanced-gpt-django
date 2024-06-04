@@ -1,216 +1,241 @@
+window.onload = function () {
 // logic for selecting new chat and history
 function change_name(to_change) {
 document.getElementById("but-text-new-his").innerHTML = to_change;
 }
 
 
-// display the selected data
-const chatHistoryNo = document.querySelectorAll('#file-select-sidebar');
-console.log(chatHistoryNo[0])
-
-//if (chatHistoryNo) {
-//    const liElements = chatHistoryNo.querySelectorAll('li');
-//
-//};
-
-//sliderID = document.getElementById("slider-tokens");
-//sliderValueText = document.getElementById("sliderValue");
+// select max_tokens
 tokens = 2000;
-function updateSliderValuesTokens(sliderId, sliderValueText, maxValue) {
-       document.getElementById('sliderValue').textContent = sliderValueText + '/' + maxValue;
-       tokens = document.getElementById('sliderValue').textContent;
-};
+const tokens_slider = document.getElementById('slider-tokens')
+var current_tokens_value = tokens_slider.value
+var tokens_max = tokens_slider.max
 
-function updateSliderValuesTemperature(sliderId, sliderValueText, maxValue) {
-       document.getElementById('sliderVal').textContent = sliderValueText + '/' + maxValue;
-       tokens = document.getElementById('sliderVal').textContent;
-};
+tokens_slider.addEventListener('change', function() {
+    current_tokens_value = tokens_slider.value
+    tokens_max = tokens_slider.max
+    document.getElementById('slider-value').innerHTML = current_tokens_value + '/' + tokens_max;
+    console.log("Token value : ", current_tokens_value)
+    });
 
-var role = 'helpful assistant'
-function updateRole(event, roleText) {
-    if (event.key ==='Enter' && roleText != "") {
-        role = roleText;
-        console.log(role)
+
+
+// choose temperature
+const temperature_slider = document.getElementById('slider-temp')
+var current_temp_value = temperature_slider.value
+var temperature_max = temperature_slider.max
+
+temperature_slider.addEventListener('change', function() {
+    current_temp_value = temperature_slider.value
+    temperature_max = temperature_slider.max
+    document.getElementById('slider-val').innerHTML = current_temp_value + '/' + temperature_max;
+    console.log("Token value : ", current_temp_value)
+    });
+
+
+// Role
+var role = 'You are a helpful assistant.';
+role_selector = document.getElementById('role-input');
+
+role_selector.addEventListener('keydown', function() {
+    if (event.key ==='Enter') {
+        role = role_selector.value;
+        if (role != "") {
         document.getElementById('role-info').textContent = role;
         document.getElementById('role-input').value = "";
-    }
-}
-
-promptResponseList = []
-
-var prompt = '';
-response_no = 0;
-
-function sendThroughCtrlEnter(event, user_prompt) {
-    if (user_prompt != undefined && user_prompt !== '') {
-        if (event.ctrlKey && event.key ==='Enter') {
-            prompt = user_prompt;
-            console.log(prompt);
-            document.getElementById('prompt-text-area').value = "";
-            promptResponseList.push(prompt);
-            response = "Walaikum As Salam" // func call here
-            response_no += 1;
-            promptResponseList.push({"response_no": response_no, "prompt": prompt, "response": response})
-            console.log(promptResponseList)
-            // Create FormData object and append variables
-            const dataToSend = new FormData();
-            dataToSend.append('prompt', prompt);
-            dataToSend.append('stream', stream);
-            dataToSend.append('tokens', tokens);
-            dataToSend.append('model', selectedModel);
-            dataToSend.append('remember_context', rememberContext);
-
-            // Send data using Fetch API
-            fetch('/receive-data/', {
-                method: 'POST',
-                body: dataToSend
-            })
-            .then(response => response.json())
-            .then(data => console.log('Success:', data))
-            .catch(error => console.error('Error:', error));
-
-            console.log(prompt);
-
-            const container = document.getElementById('prompt-responses');
-
-            promptResponseList.forEach(promptResponse => {
-                // Create a new div element for prompt
-                const promptDiv = document.createElement('div');
-                promptDiv.classList.add('prompt-div');
-
-                // Create a new paragraph element for the prompt text
-                const promptPara = document.createElement('p');
-                promptPara.classList.add('prompt');
-                promptPara.textContent = promptResponse.prompt;
-
-                // Append the paragraph to the prompt div
-                promptDiv.appendChild(promptPara);
-
-                // Create a new div element for response
-                const responseDiv = document.createElement('div');
-                responseDiv.classList.add('response-div');
-
-                // Create a new paragraph element for the response text
-                const responsePara = document.createElement('p');
-                responsePara.classList.add('response');
-                responsePara.textContent = promptResponse.response;
-
-                // Append the paragraph to the response div
-                responseDiv.appendChild(responsePara);
-
-                // Append both prompt and response divs to the container
-                container.appendChild(promptDiv);
-                container.appendChild(responseDiv);
-            });
+        console.log(role)
         }
     }
-}
+    });
 
 
-//function sendThroughClick() {
-//    prompt = document.getElementById('prompt-text-area').value;
-//    document.getElementById('prompt-text-area').value = "";
-//    promptResponseList.append(prompt);
-//    console.log(prompt)
-//}
+// input file
+input_file_button = document.getElementById('file-input-button');
+file_browse_button = document.getElementById('file-input-element');
 
-function sendThroughClick() {
-            const prompt = document.getElementById('prompt-text-area').value;
-            promptResponseList.push(prompt);
-            document.getElementById('prompt-text-area').value = "";
+input_file_button.addEventListener('click', function() {
+    file_browse_button.click();
+});
 
-            // Create FormData object and append variables
-            const dataToSend = new FormData();
-            dataToSend.append('prompt', prompt);
-            dataToSend.append('stream', stream);
-            dataToSend.append('tokens', tokens);
-            dataToSend.append('model', selectedModel);
-            dataToSend.append('remember_context', rememberContext);
 
-            // Send data using Fetch API
-            fetch('/receive-data/', {
-                method: 'POST',
-                body: dataToSend
-            })
-            .then(response => response.json())
-            .then(data => console.log('Success:', data))
-            .catch(error => console.error('Error:', error));
-
-            console.log(prompt);
-        }
-
-function inputFile() {
-    console.log('working');
-    document.getElementById('file-input-element').click();
-}
-
+// Remember context
 var rememberContext = true;
-function rememberContext(checked) {
+var rememberContextElement = document.getElementById('remember-context');
+
+rememberContextElement.addEventListener('click', function() {
+    checked = rememberContextElement.checked;
     if (checked == true) {
         rememberContext = true;
     }
     else {
         rememberContext = false;
     }
-}
+    console.log(rememberContext);
+});
 
-var stream = true;
-function setStream(checked) {
+
+// set stream
+var setStream = true;
+var setStreamElement = document.getElementById('stream');
+
+setStreamElement.addEventListener('click', function() {
+    checked = setStreamElement.checked;
     if (checked == true) {
-        stream = true;
+        setStream = true;
     }
     else {
-        stream = false;
+        setStream = false;
     }
-}
-
-var selectedModel = 'GPT-3.5';
-function setModel(model) {
-    if (model.textContent === 'GPT-3.5-turbo') {
-        selectedModel = 'gpt-3.5-turbo-0125';
-        document.getElementById('select-model-button').textContent = "GPT-3.5-turbo"
-    }
-    else if (model.textContent === 'GPT-4-turbo') {
-        selectedModel = 'gpt-4-turbo';
-        document.getElementById('select-model-button').textContent = "GPT-4-turbo"
-    }
-    else if (model.textContent === 'GPT-4') {
-        selectedModel = 'gpt-4';
-        document.getElementById('select-model-button').textContent = "GPT-4"
-    }
-    else if (model.textContent === 'GPT-4o') {
-        selectedModel = 'gpt-4o';
-        document.getElementById('select-model-button').textContent = "GPT-4o"
-    }
-    console.log(selectedModel)
-}
-
-var selectedImageModel = 'Dall-E 2';
-function setImageModel(model) {
-    if (model.textContent === 'Dall-E 2') {
-        selectedModel = 'dall-e-2';
-        document.getElementById('select-model-button').textContent = "Dall-E 2";
-    }
-    else if (model.textContent === 'Dall-E 3') {
-        selectedModel = 'dall-e-2';
-        document.getElementById('select-model-button').textContent = "Dall-E 3";
-    }
-    console.log(selectedModel)
-}
+    console.log(setStream);
+});
 
 
-//document.addEventListener('DOMContentLoaded', function() {
-//            document.getElementById('sendDataButton').addEventListener('click', function() {
-//                const dataToSend = new FormData();
-//                dataToSend.append('variable1', 'value1');
-//                dataToSend.append('variable2', 'value2');
+// choose frequency
+const frequency_slider = document.getElementById('slider-frequency')
+var current_frequency_value = frequency_slider.value
+var frequency_max = frequency_slider.max
+
+frequency_slider.addEventListener('change', function() {
+    current_frequency_value = frequency_slider.value
+    frequency_max = frequency_slider.max
+    document.getElementById('slider-freq-val').innerHTML = current_frequency_value + '/' + frequency_max;
+    console.log("Frequency value : ", current_frequency_value)
+    });
+
+
+// choose no of responses
+const response_no_slider = document.getElementById('slider-no-responses')
+var current_res_no_value = response_no_slider.value
+var response_no_max = response_no_slider.max
+
+response_no_slider.addEventListener('change', function() {
+    current_res_no_value = response_no_slider.value
+    document.getElementById('slider-res-no-val').innerHTML = current_res_no_value + '/' + response_no_max;
+    console.log("Response no value : ", current_res_no_value)
+    });
+
+
+//select text-model
+var selectedModel = 'gpt-3.5-turbo-0125';
+modelDict = {"GPT-3.5-turbo": "gpt-3.5-turbo-0125",
+            "GPT-4-turbo" : "gpt-4-turbo",
+            "GPT-4" : "gpt-4",
+            "GPT-4o": "gpt-4o"}
+
+chatModelsSelectBox = document.getElementsByClassName('chatModelSelect');
+chatModelArray = Array.from(chatModelsSelectBox);
+
+chatModelArray.forEach(function(model) {
+        model.addEventListener('click', function() {
+            if (model.textContent in modelDict) {
+                selectedModel = modelDict[model.textContent];
+                document.getElementById('select-model-button').textContent = model.textContent;
+                console.log(model.textContent, selectedModel)
+            }
+        })
+    });
+
+
+//select image-model
+var selectedModelImage = 'Dall-E 2';
+modelDictImg = {"Dall-E 2": "dall-e-2",
+            "Dall-E 3" : "dall-e-3",}
+
+imageModelsSelectBox = document.getElementsByClassName('imageModelSelect');
+imageModelArray = Array.from(imageModelsSelectBox);
+
+imageModelArray.forEach(function(model) {
+        model.addEventListener('click', function() {
+            if (model.textContent in modelDictImg) {
+                selectedModelImage = modelDictImg[model.textContent];
+                document.getElementById('select-model-button-img').textContent = model.textContent;
+                console.log(model.textContent, selectedModelImage)
+            }
+        })
+    });
+
+
+// prompt-responses transfer
+promptResponseList = []
+var prompt = '';
+response_no = 0;
+messages = null;
+
+const button = document.getElementById('submit-button');
+const promptElement = document.getElementById('prompt-text-area');
+button.addEventListener('click', sendThroughClick);
+
+function sendThroughClick(event) {
+    const userPrompt = promptElement.value;
+//    if (userPrompt !== '') {
+//        if (event.ctrlKey && event.key === 'Enter') {
+            if (rememberContext == false || messages == null) {
+            console.log('here')
+            messages = [
+                {"role": "system", "content": role},
+                {"role": "user", "content": userPrompt}
+                ]
+            }
+            else {
+                messages.push(
+                {"role": "system", "content": role},
+                {"role": "user", "content": userPrompt}
+                )
+            }
+//            const messages = JSON.stringify(messages)
+            promptElement.value = ""; // Clear the input
+
+            // Create FormData object and append variables
+            const dataToSend = {
+                'messages': messages,
+                'model': selectedModel,
+                'tokens': current_tokens_value,
+                'frequency': current_frequency_value,
+                'no-responses': current_res_no_value,
+                'temperature': current_temp_value,
+                'remember_context': rememberContext,
+                'stream': setStream
+            };
+            console.log(messages)
+
+            const jsonData = JSON.stringify(dataToSend);
+            console.log(jsonData)
+            // Send data using Fetch API
+            fetch('/receive-data/', {
+                method: 'POST',
+                body: jsonData
+            })
+            .then(response => response.json())
+            .then(data = data => console.log('Success:', data))
+            .catch(error => console.error('Error:', error));
+            console.log(messages)
+
+            promptResponsesElement = document.getElementsByClassName('response')
+            promptResponsesElement.forEach(
+                function(element) {
+
+                }
+            )
+            document.getElementsByClassName('response')[0].textContent = "responsrr";
+
+//            // Append prompt and response to the container
+//            const container = document.getElementById('prompt-responses');
+//            const promptDiv = document.createElement('div');
+//            promptDiv.classList.add('prompt-div');
+//            const promptPara = document.createElement('p');
+//            promptPara.classList.add('prompt');
+//            promptPara.textContent = promptResponse.prompt;
+//            promptDiv.appendChild(promptPara);
+//            container.appendChild(promptDiv);
 //
-//                fetch('/receive-data/', {
-//                    method: 'POST',
-//                    body: dataToSend
-//                })
-//                .then(response => response.json())
-//                .then(data => console.log('Success:', data))
-//                .catch(error => console.error('Error:', error));
-//            });
-//        });
+//            const responseDiv = document.createElement('div');
+//            responseDiv.classList.add('response-div');
+//            const responsePara = document.createElement('p');
+//            responsePara.classList.add('response');
+//            responsePara.textContent = promptResponse.response;
+//            responseDiv.appendChild(responsePara);
+//            container.appendChild(responseDiv);
+//        }
+//    }
+}
+}

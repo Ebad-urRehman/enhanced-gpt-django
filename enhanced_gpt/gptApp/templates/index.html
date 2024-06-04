@@ -57,37 +57,48 @@
     </header>
     <div style="display: flex; height: 100vh;">
         <div id="sidebar">
+            <div class="role-input" style="padding-left: 10px; padding-top: 10px;">
+                <label for="role-input">Enter the role</label>
+                <input type="text" id="role-input" name="role-input">
+                <p>Current Role: <b><span id="role-info">Helpful Assistant</span></b></p>
+            </div>
+            <div class="slider-container-tokens">
+            <label for="slider-tokens">Tokens value:</label>
+            <input type="range" id="slider-tokens" name="slider-tokens" min="0" max="4000" value="2000">
+            <p>Value: <span id="slider-value">2000/4000</span></p>
+            </div>
+            <div class="slider-container-temperature">
+            <label for="slider-tokens">Temperature :</label>
+            <input type="range" id="slider-temp" name="slider-tokens" min="0" max="1" value="0.5" step="0.01">
+            <p>Value: <span id="slider-val">0.05/1</span></p>
+            </div>
+            <div class="slider-container-tokens">
+            <label for="slider-frequency">Frequency : </label>
+            <input type="range" id="slider-frequency" name="slider-frequency" min="-2" max="2" value="1" step="0.1">
+            <p>Value: <span id="slider-freq-val">1/2</span></p>
+            </div>
+            <div class="slider-container-tokens">
+            <label for="slider-no-responses">Responses : </label>
+            <input type="range" id="slider-no-responses" name="slider-no-responses" min="1" max="5" value="1" step="1">
+            <p>Value: <span id="slider-res-no-val">1/5</span></p>
+            </div>
+
             <div class="dropdown mb-4">
               <label for="select-model-button" class="item align-left">Select Model</label><br>
               <button id='select-model-button' class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 GPT-3.5-turbo
               </button>
               <ul class="dropdown-menu">
-                <li class="dropdown-item" onclick="setModel(this)">GPT-3.5-turbo</li>
-                <li class="dropdown-item" onclick="setModel(this)">GPT-4o</li>
-                <li class="dropdown-item" onclick="setModel(this)">GPT-4-turbo</li>
-                <li class="dropdown-item" onclick="setModel(this)">GPT-4</li>
+                <li class="dropdown-item chatModelSelect">GPT-4o</li>
+                <li class="dropdown-item chatModelSelect">GPT-3.5-turbo</li>
+                <li class="dropdown-item chatModelSelect">GPT-4-turbo</li>
+                <li class="dropdown-item chatModelSelect">GPT-4</li>
               </ul>
             </div>
-            <div class="slider-container-tokens">
-            <label for="slider-tokens">Tokens value:</label>
-            <input type="range" id="slider-tokens" name="slider-tokens" min="0" max="4000" value="2000" onchange="updateSliderValuesTokens(this.id, this.value, this.max)">
-            <p>Value: <span id="sliderValue">2000/4000</span></p>
-            </div>
-            <div class="slider-container-temperature">
-            <label for="slider-tokens">Temperature :</label>
-            <input type="range" id="slider-temp" name="slider-tokens" min="0" max="1" value="0.5" step="0.01" onchange="updateSliderValuesTemperature(this.id, this.value, this.max)">
-            <p>Value: <span id="sliderVal">0.05/1</span></p>
-            </div>
-            <div class="role-input" style="padding-left: 10px; padding-top: 10px;">
-                <label for="role-input">Enter the role</label>
-                <input type="text" id="role-input" name="role-input" onkeydown="updateRole(event, this.value)">
-                <p>Current Role: <b><span id="role-info">Helpful Assistant</span></b></p>
-            </div>
             <div>
-                <h6><input type="checkbox" id="remember-context" onclick="rememberContext(this.check)" checked>
+                <h6><input type="checkbox" id="remember-context" checked>
                 <label for="remember-context">  Remember Context</label></h6>
-                <h6><input type="checkbox" id="stream" onclick="setStream(this.check)" checked>
+                <h6><input type="checkbox" id="stream" checked>
                 <label for="stream">Stream</label></h6>
             </div>
 
@@ -107,9 +118,9 @@
           </div>
           <div id="fixed-at-bottom">
           <input id="file-input-element" type="file">
-          <button id="file-input-button" onmousedown="inputFile()"><img id="file-input-image" src="{% static 'gptApp/images/file.png' %}" alt="file-input-button"></button>
-          <textarea id="prompt-text-area" onkeydown="sendThroughCtrlEnter(event, this.value)"></textarea>
-          <button id="submit-button" onmousedown="sendThroughClick()"><img id="submit-image" src="{% static 'gptApp/images/send-blue.png' %}" alt="prompt button"></button>
+          <button id="file-input-button"><img id="file-input-image" src="{% static 'gptApp/images/file.png' %}" alt="file-input-button"></button>
+          <textarea id="prompt-text-area"></textarea>
+          <button id="submit-button"><img id="submit-image" src="{% static 'gptApp/images/send-blue.png' %}" alt="prompt button"></button>
           </div>
       </div>
       </div>
@@ -120,9 +131,7 @@
             window.open("history.html", '_');
         }
     </script>
+    <script src="{% static 'gptApp/js/script.js' %}"></script>
 
-  <script src="{% static 'gptApp/js/script.js' %}">
-          
-  </script>
 </body>
 </html>

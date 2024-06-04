@@ -14,3 +14,15 @@ request.session: A dictionary-like object representing the current session (if s
 
 
 seed parameters
+
+
+1. add user_id, user_email, user_name, api_key, signup_date in one table "UserInfo"
+2. make a table name sign up storing information of signed up peoples, with emails as Primary key.
+3. if a user forgets password, check in sign up table and send them a password reset request, and reset the password.
+(perhaps to make a column name password_reset_request_sent), and send them email for open a new interface for sign in.
+that updates password in sign in table and store credentials in cookies.
+4. make seperate table for each app interface, that access data through user_id + "chat" + chat_response_id as composite primary key
+6. Make a table with user names as columns
+5. add user in a table as column names as they logged in to store the name of all thier response tabs
+to be load next time they open up the app
+6. create a table user prompt-response metadata that contain list of all repsonse tab with months with it so cant be sorted with months
