@@ -164,11 +164,57 @@ messages = null;
 const button = document.getElementById('submit-button');
 const promptElement = document.getElementById('prompt-text-area');
 button.addEventListener('click', sendThroughClick);
+storedData = null;
+i=0;
+
+function createDivPrompt(userPrompt) {
+    // get main div
+    const container_prompt_responses = document.getElementById('prompt-responses')
+
+    // create main div and assign class
+    const promptDiv = document.createElement('div');
+    promptDiv.setAttribute('class', 'prompt-div');
+
+    //create text div with in it
+    const prompt_text = document.createElement('span');
+    prompt_text.setAttribute('class', 'prompt');
+
+    // add child to it
+    promptDiv.appendChild(prompt_text);
+    container_prompt_responses.appendChild(promptDiv);
+
+//    add text to prompt text element
+    prompt_text.textContent = userPrompt;
+}
+
+function createDivResponse(response) {
+
+    // get main div
+    const container_prompt_responses = document.getElementById('prompt-responses')
+
+    // create main div and assign class
+    const responseDiv = document.createElement('div');
+    responseDiv.setAttribute('class', 'response-div');
+
+    //create text div with in it
+    const response_text = document.createElement('p');
+    response_text.setAttribute('class', 'response');
+
+    // add child to it
+    responseDiv.appendChild(response_text);
+    container_prompt_responses.appendChild(responseDiv);
+
+    renderMarkdown(response, response_text);
+//    add text to prompt text element
+//    response_text.innerText = response;
+}
+
+var userPrompt = null;
 
 function sendThroughClick(event) {
-    const userPrompt = promptElement.value;
-//    if (userPrompt !== '') {
-//        if (event.ctrlKey && event.key === 'Enter') {
+            userPrompt = document.getElementById('prompt-text-area').value;
+            console.log(userPrompt)
+            createDivPrompt(userPrompt)
             if (rememberContext == false || messages == null) {
             console.log('here')
             messages = [
@@ -177,10 +223,15 @@ function sendThroughClick(event) {
                 ]
             }
             else {
+            if (role === messages[i-1]['content']) {
                 messages.push(
-                {"role": "system", "content": role},
                 {"role": "user", "content": userPrompt}
                 )
+                }
+            else {
+                messages.push({"role": "system", "content": role},
+                {"role": "user", "content": userPrompt}
+                ) }
             }
 //            const messages = JSON.stringify(messages)
             promptElement.value = ""; // Clear the input
@@ -205,37 +256,18 @@ function sendThroughClick(event) {
                 method: 'POST',
                 body: jsonData
             })
+
             .then(response => response.json())
-            .then(data = data => console.log('Success:', data))
-            .catch(error => console.error('Error:', error));
-            console.log(messages)
+          .then(data => {
+            // operations on data
+            console.log('Success:', data);
+            const final_response_text = data['success']['response'][0] + "\nTokens used : " + data['success']['response'][1].toString()
 
-            promptResponsesElement = document.getElementsByClassName('response')
-            promptResponsesElement.forEach(
-                function(element) {
+            createDivResponse(final_response_text)
+            console.log(data['success']['response'])
+            i+=1;
+          })
+          .catch(error => console.error('Error:', error));
 
-                }
-            )
-            document.getElementsByClassName('response')[0].textContent = "responsrr";
-
-//            // Append prompt and response to the container
-//            const container = document.getElementById('prompt-responses');
-//            const promptDiv = document.createElement('div');
-//            promptDiv.classList.add('prompt-div');
-//            const promptPara = document.createElement('p');
-//            promptPara.classList.add('prompt');
-//            promptPara.textContent = promptResponse.prompt;
-//            promptDiv.appendChild(promptPara);
-//            container.appendChild(promptDiv);
-//
-//            const responseDiv = document.createElement('div');
-//            responseDiv.classList.add('response-div');
-//            const responsePara = document.createElement('p');
-//            responsePara.classList.add('response');
-//            responsePara.textContent = promptResponse.response;
-//            responseDiv.appendChild(responsePara);
-//            container.appendChild(responseDiv);
-//        }
-//    }
 }
 }
