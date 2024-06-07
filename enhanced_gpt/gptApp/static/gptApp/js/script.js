@@ -209,30 +209,48 @@ function createDivResponse(response) {
 //    response_text.innerText = response;
 }
 
+
+// history tabs
+document.getElementById('hover-button-history-bar').addEventListener('mouseover', function() {
+    document.getElementById('history-bar').style.width = '250px';
+});
+
+document.getElementById('history-bar').addEventListener('mouseleave', function() {
+    document.getElementById('history-bar').style.width = '0';
+});
+
+
 var userPrompt = null;
+var tabList = []
+var tabName = null
 
 function sendThroughClick(event) {
             userPrompt = document.getElementById('prompt-text-area').value;
             console.log(userPrompt)
             createDivPrompt(userPrompt)
             if (rememberContext == false || messages == null) {
-            console.log('here')
-            messages = [
-                {"role": "system", "content": role},
-                {"role": "user", "content": userPrompt}
-                ]
-            }
-            else {
-            if (role === messages[i-1]['content']) {
-                messages.push(
-                {"role": "user", "content": userPrompt}
-                )
+                console.log('here')
+                messages = [
+                    {"role": "system", "content": role},
+                    {"role": "user", "content": userPrompt}
+                    ]
+                i=0;
+                tabList.push(messages)
                 }
-            else {
-                messages.push({"role": "system", "content": role},
-                {"role": "user", "content": userPrompt}
-                ) }
+                else {
+                if (role === messages[i-1]['content']) {
+                    messages.push(
+                    {"role": "user", "content": userPrompt}
+                    )
+                    }
+                else {
+                    messages.push({"role": "system", "content": role},
+                    {"role": "user", "content": userPrompt}
+                    ) }
+                tabList.push(messages)
+
             }
+            console.log(tabList)
 //            const messages = JSON.stringify(messages)
             promptElement.value = ""; // Clear the input
 
@@ -245,8 +263,9 @@ function sendThroughClick(event) {
                 'no-responses': current_res_no_value,
                 'temperature': current_temp_value,
                 'remember_context': rememberContext,
-                'stream': setStream
-            };
+                'stream': setStream,
+                'tab-name': tabName
+            }
             console.log(messages)
 
             const jsonData = JSON.stringify(dataToSend);
@@ -261,8 +280,35 @@ function sendThroughClick(event) {
           .then(data => {
             // operations on data
             console.log('Success:', data);
-            const final_response_text = data['success']['response'][0] + "\nTokens used : " + data['success']['response'][1].toString()
 
+            let response_text = data['success']['response'][0];
+            let tokens_used = data['success']['response'][1];
+
+            if (tabName == null) {
+                tabName = data['success']['tab-name'];
+                console.log(tabName)
+                const tabList = ["tab1", "tab2", "tab3"]
+                tabList.push("tab4")
+                let json_meta_data = {
+                    'chat_tab_list': tabList,
+                    'image_tab_list': null,
+                    'settings': null
+                }
+                json_meta_data = JSON.stringify(json_meta_data);
+                fetch('/store-chat-tabs/', {
+                    method: 'POST',
+                    body: json_meta_data
+                })
+                .then(response => response.json())
+                .then(metadata => {
+                // operations on data
+                console.log('Success:', metadata);
+                })
+                .catch(error => console.error('Error:', error));
+            }
+            messages.push({"role": "assistant", "content": response_text})
+            console.log(messages)
+            const final_response_text = response_text + "\nTokens used : " + tokens_used.toString();
             createDivResponse(final_response_text)
             console.log(data['success']['response'])
             i+=1;

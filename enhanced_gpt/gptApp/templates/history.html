@@ -10,7 +10,7 @@
 </head>
 <body>
     <header>
-        <div class="container-fluid" style="position: fixed;">
+        <div class="container-fluid" style="position: fixed; z-index:2;">
             <nav class="navbar navbar-expand-lg bg-body-tertiary bg-primary">
                 <div class="container-fluid">
                   <a class="navbar-brand" href="#">Enhanced GPT</a>
@@ -58,60 +58,30 @@
     <div style="display: flex; height: 100vh;">
         <div id="sidebar">
             <ul id="file-select-sidebar">
-          <li>18-3-2024</li>
-          <li>19-3-2024</li>
-          <li>20-3-2024</li>
-          <li>21-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-          <li>22-3-2024</li>
-        </ul>
+
+            </ul>
 
         </div>
-      <div style="width: 80%; padding-top: 80px;">
-        <div style="justify-content: center; width: 100%; display: flex; flex-direction: column; text-align: center;">
-          <h1>Enhanced GPT</h1>
-          <div id="fixed-at-bottom">
-          <input id="file-input-element" type="file">
-          <button id="file-input-button" onmousedown="inputFile()"><img id="file-input-image" src="{% static 'gptApp/images/file.png' %}" alt="file-input-button"></button>
-          <textarea id="prompt-text-area" onkeydown="sendThroughCtrlEnter(event, this.value)"></textarea>
-          <button id="submit-button" onmousedown="sendThroughClick()"><img id="submit-image" src="{% static 'gptApp/images/send-blue.png' %}" alt="prompt button"></button>
+      <div style="width: 100%; padding-top: 80px;">
+        <div style="justify-content: center; padding-left:220px; width: 100%; display: flex; text-align: center;">
+          <div style="width:70%; align-self:center; margin-bottom:70px;">
+            <h1>Enhanced GPT</h1>
+              <div id="prompt-responses">
+                  <p style="font-family: Arial; text-align:left; background-color: gainsboro; border:2px solid gainsboro; border-radius:8px;">
+                      👋 Aslam u Alaikum!<br>
+                      🛑 I am Enhanced GPT<br>
+                      💻 Write a Question and get an Answer<br>
+                      🔈 Give a custom Role to Enhanced GPT to behave accordingly<br>
+                      🧾🔁 You can Found old responses in History tab<br>
+                  </p>
+              </div>
           </div>
+<!--          <div id="fixed-at-bottom">-->
+<!--          <input id="file-input-element" type="file">-->
+<!--          <button id="file-input-button"><img id="file-input-image" src="{% static 'gptApp/images/file.png' %}" alt="file-input-button"></button>-->
+<!--          <textarea id="prompt-text-area"></textarea>-->
+<!--          <button id="submit-button"><img id="submit-image" src="{% static 'gptApp/images/send-blue.png' %}" alt="prompt button"></button>-->
+<!--          </div>-->
       </div>
       </div>
     </div>
@@ -121,12 +91,11 @@
             window.open("history.html", '_');
         }
     </script>
+    <script src="{% static 'gptApp/js/manage_history.js' %}"></script>
+<!--    <script src="{% static 'gptApp/js/script.js' %}"></script>-->
+<!--    <script src="{% static 'gptApp/js/markdown.js' %}"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>-->
 
-  <script src="{% static 'gptApp/js/script.js' %}">
 
-  </script>
 </body>
 </html>
-
-
-
