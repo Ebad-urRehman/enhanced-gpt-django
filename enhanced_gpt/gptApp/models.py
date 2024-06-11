@@ -21,6 +21,15 @@ class UserMetaData(models.Model):
     chat_tab_list = models.JSONField(null=True, blank=True)
     image_tab_list = models.JSONField(null=True, blank=True)
 
+
+class ChatsData(models.Model):
+    user = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name="chat_data_entries")
+    chat_name = models.CharField(max_length=100)
+    prompt_response_dict = models.JSONField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('user', 'chat_name')
+
 # class ChatsData(models.Model):
 #     chat_name = models.CharField(max_length=100, primary_key=True)
 

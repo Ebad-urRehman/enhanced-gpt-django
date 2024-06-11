@@ -26,3 +26,26 @@ that updates password in sign in table and store credentials in cookies.
 5. add user in a table as column names as they logged in to store the name of all thier response tabs
 to be load next time they open up the app
 6. create a table user prompt-response metadata that contain list of all repsonse tab with months with it so cant be sorted with months
+
+
+
+
+
+
+
+
+
+
+
+
+
+[
+  {
+    "prompt": "chat1",
+    "response": "The `async` function in JavaScript is part of the ES2017 standard and helps in writing asynchronous code in a more synchronous/linear manner. Remember, using the 'await' keyword will pause execution of your asynchronous operations - which could impact performance if not managed correctly. You should try to limit usage of 'await' where possible or manage it within Promise.all() blocks etc...when dealing with lots of operations at once (like API calls)."
+  },
+  {
+    "prompt": "chat2",
+    "response": "The `async` function in JavaScript is part of the ES2017 standard and helps in writing asynchronous code in a more synchronous/linear manner. Remember, using the 'await' keyword will pause execution of your asynchronous operations - which could impact performance if not managed correctly. You should try to limit usage of 'await' where possible or manage it within Promise.all() blocks etc...when dealing with lots of operations at once (like API calls)."
+  }
+]

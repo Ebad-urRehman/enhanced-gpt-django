@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from gptApp import functions
 from django.shortcuts import render, redirect
-from gptApp.models import UserInfo, UserMetaData
+from gptApp.models import UserInfo, UserMetaData, ChatsData
 from django.contrib import messages
 from django.contrib.auth.models import auth, User
 from django.contrib.auth.decorators import login_required
@@ -34,8 +34,6 @@ def pdf_reader(request):
 
 def pdf_reader_history(request):
     return render(request, '../templates/pdf_reader_history.html')
-
-
 
 
 @csrf_exempt
@@ -74,7 +72,8 @@ def login(request):
             auth.login(request, user)
             return redirect("/")
         else:
-            messages.error(request, "Wrong email or password! Make sure you have already register with same email and password")
+            messages.error(request,
+                           "Wrong email or password! Make sure you have already register with same email and password")
             return redirect('login')
     else:
         return render(request, 'login.html')
@@ -87,7 +86,8 @@ def receive_data(request):
             # Parse the JSON data from the request body
             data = json.loads(request.body.decode('utf-8'))
             data["response"] = functions.get_chat_response(model=data['model'], messages=data['messages'],
-                                                           max_tokens=int(data['tokens']), frequency_penalty=int(data['frequency']),
+                                                           max_tokens=int(data['tokens']),
+                                                           frequency_penalty=int(data['frequency']),
                                                            no_of_responses=int(data['no-responses']),
                                                            stream=data['stream'])
             tab_name = None
@@ -97,6 +97,31 @@ def receive_data(request):
             if tab_name:
                 data['tab-name'] = tab_name
             return JsonResponse({'success': data})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+@csrf_exempt
+@login_required
+def load_chat_tabs(request):
+    user = request.user
+    if not user:
+        return JsonResponse({'error', 'Signup and login first'}, status=401)
+
+    current_user_chat_data, created = UserMetaData.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        try:
+            settings = current_user_chat_data.settings
+            chat_tab_list = current_user_chat_data.chat_tab_list
+            image_tab_list = current_user_chat_data.image_tab_list
+
+            get_metadata = {'settings': settings,
+                            'chat_tab_list': chat_tab_list,
+                            'image_tab_list': image_tab_list}
+            return JsonResponse({'success': get_metadata})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     else:
@@ -135,12 +160,60 @@ def store_chat_tabs(request):
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
+@csrf_exempt
+@login_required
+def store_chats_history(request):
+    user = request.user
+    if not user:
+        return JsonResponse({'error', 'Signup and login first'}, status=401)
+
+    if request.method == 'POST':
+        try:
+            chats_data = json.loads(request.body.decode('utf-8'))
+            chat_name = chats_data['tab_name']
+            prompt_responses = chats_data['prompt_response_dict']
+
+            if prompt_responses and chat_name:
+                chats_data_obj, created = ChatsData.objects.update_or_create(
+                    user=user,
+                    chat_name=chat_name,
+                    defaults={'prompt_response_dict': prompt_responses}
+                )
+                return JsonResponse({'success': chats_data})
+
+        except json.JSONDecodeError as json_err:
+            # Handle JSON decoding errors
+            print("JSON Decode Error:", str(json_err))
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
+@csrf_exempt
+@login_required
+def load_chats_history(request):
+    user = request.user
+    if not user:
+        return JsonResponse({'error', 'Signup and login first'}, status=401)
 
+    if request.method == 'POST':
+        try:
+            tab_data = json.loads(request.body.decode('utf-8'))
+            tab_name = tab_data['current_tab_name']
+            chats_data = ChatsData.objects.get(user=user, chat_name=tab_name)
 
+            prompt_response_dict = chats_data.prompt_response_dict
 
+            if chats_data:
+                return JsonResponse({'success': prompt_response_dict})
 
-
-
-
+        except json.JSONDecodeError as json_err:
+            # Handle JSON decoding errors
+            print("JSON Decode Error:", str(json_err))
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)

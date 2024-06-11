@@ -124,5 +124,28 @@ prompt_response_list = messages.forEach(function(list) {
         }
     })
 })
+
+
+
+//select image-model
+var selectedModelImage = 'Dall-E 2';
+modelDictImg = {"Dall-E 2": "dall-e-2",
+            "Dall-E 3" : "dall-e-3",}
+
+imageModelsSelectBox = document.getElementsByClassName('imageModelSelect');
+imageModelArray = Array.from(imageModelsSelectBox);
+
+imageModelArray.forEach(function(model) {
+        model.addEventListener('click', function() {
+            if (model.textContent in modelDictImg) {
+                selectedModelImage = modelDictImg[model.textContent];
+                document.getElementById('select-model-button-img').textContent = model.textContent;
+                console.log(model.textContent, selectedModelImage)
+            }
+        })
+    });
+
+
+
 //createDivResponse(response)
 }

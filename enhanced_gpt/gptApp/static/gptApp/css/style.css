@@ -96,30 +96,29 @@
 
 #file-select-sidebar {
     list-style-type: none;
-
+    padding:0;
+    width:100%;
 }
 
 #file-select-sidebar > * {
-    background-color: rgb(202, 204, 192);
-    border: 2px solid black;
-    border-radius: 8px;
-    border-bottom: 1px solid black;
-    border-top: 1px solid black;
+    background-color: #d4ffff;
+    border: 2px solid #d4ffff;
+    border-radius: 15px;
+    border-bottom: 1px solid #d4ffff;
+    border-top: 1px solid #d4ffff;
     height: 40px;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 25px;
-    box-shadow:
-                -15px 5px 10px rgba(0, 0, 0, 0.2),
-                -20px 10px 20px rgba(0, 0, 0, 0.2),
-                -20px 15px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
 
 }
 
 #file-select-sidebar > *:hover{
-    background-color: rgba(94, 87, 87, 0.3);
+    background-color: rgba(142, 200, 200, 0.9);
     cursor: pointer;
+    color: #6c757d;
 
 }
 
@@ -137,6 +136,7 @@
     z-index: 5;
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 #hover-button-history-bar {
@@ -154,6 +154,27 @@
     border-bottom-left-radius:25px;
     width: 30px;
     height: 70px;
+}
+
+#new-chat-button {
+    background-color: #0075ff;
+    color:white;
+    width: 50%;
+    border: 2px solid white;
+    border-radius: 25px;
+    height: 40px;
+    margin-bottom: 10px;
+}
+
+#new-chat-button:hover {
+    background-color: azure;
+    color: black;
+    width: 50%;
+    self-align:center;
+    border: 2px solid black;
+    border-radius: 25px;
+    height: 40px;
+    margin-bottom: 10px;
 }
 
 .slider-container {
