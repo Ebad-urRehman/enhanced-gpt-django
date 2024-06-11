@@ -92,6 +92,7 @@
     overflow-x:hidden;
     overflow-y:auto;
     position: fixed;
+    height: 100vh;
 }
 
 #file-select-sidebar {
@@ -107,7 +108,9 @@
     border-bottom: 1px solid #d4ffff;
     border-top: 1px solid #d4ffff;
     height: 40px;
-    display: flex;
+    display: inline-block;
+    overflow: hidden;
+    text-align:center;
     justify-content: center;
     align-items: center;
     font-size: 25px;
@@ -116,9 +119,9 @@
 }
 
 #file-select-sidebar > *:hover{
-    background-color: rgba(142, 200, 200, 0.9);
+    background-color: rgba(142, 200, 200);
     cursor: pointer;
-    color: #6c757d;
+    color: black;
 
 }
 
@@ -156,11 +159,24 @@
     height: 70px;
 }
 
-#new-chat-button {
+#new-chat-button, #new-image-button {
     background-color: #0075ff;
     color:white;
     width: 50%;
     border: 2px solid white;
+    border-radius: 25px;
+    height: 40px;
+    margin-bottom: 10px;
+
+
+}
+
+#new-image-button:hover {
+background-color: azure;
+    color: black;
+    width: 45%;
+    self-align:center;
+    border: 2px solid black;
     border-radius: 25px;
     height: 40px;
     margin-bottom: 10px;
@@ -169,7 +185,7 @@
 #new-chat-button:hover {
     background-color: azure;
     color: black;
-    width: 50%;
+    width: 45%;
     self-align:center;
     border: 2px solid black;
     border-radius: 25px;
@@ -212,5 +228,31 @@
     text-align: left;
 }
 
+
+#load-animation-container {
+position: fixed;
+bottom: 0;
+padding-bottom: 80px;
+}
+
+#load-animation {
+    display:none;
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:center;
+    width:100%;
+}
+
+
+
+
+
+
+
+
+
+#slider-container-img-responses, #dall-e-2-sizes {
+    display: none;
+}
 
 

@@ -3,6 +3,7 @@ window.onload = function () {
 var tabList = []
 var current_chats_data = []
 
+
 // fetch the meta data from database when windows load
 fetch('/load-chat-tabs/', {
                 method: 'POST'
@@ -23,26 +24,7 @@ fetch('/load-chat-tabs/', {
                 })
                 .catch(error => console.error('Error:', error));
 
-make_chat_button_functional()
-
-// select max_tokens
-tokens = 2000;
-const tokens_slider = document.getElementById('slider-tokens')
-var current_tokens_value = tokens_slider.value
-var tokens_max = tokens_slider.max
-change_tokens(tokens_slider, current_tokens_value)
-
-// choose temperature
-temperature_slider = document.getElementById('slider-temp')
-var current_temp_value = temperature_slider.value
-var temperature_max = temperature_slider.max
-change_temperature(temperature_slider, current_temp_value, temperature_max)
-
-
-// Role
-var role = 'You are a helpful assistant.';
-role_selector = document.getElementById('role-input');
-select_role(role_selector, role)
+make_image_button_functional()
 
 // input file
 input_file_button = document.getElementById('file-input-button');
@@ -51,23 +33,6 @@ file_browse_button = document.getElementById('file-input-element');
 input_file_button.addEventListener('click', function() {
     file_browse_button.click();
 });
-
-
-// Remember context
-var rememberContext = true;
-var rememberContextElement = document.getElementById('remember-context');
-set_remember_context(rememberContext, rememberContextElement)
-
-// set stream
-var setStream = true;
-var setStreamElement = document.getElementById('stream');
-set_stream(setStreamElement, setStream)
-
-// choose frequency
-const frequency_slider = document.getElementById('slider-frequency')
-var current_frequency_value = frequency_slider.value
-var frequency_max = frequency_slider.max
-change_frequency(frequency_slider, current_frequency_value, frequency_max)
 
 
 // choose no of responses
@@ -79,8 +44,8 @@ change_response_no(response_no_slider, response_no_max)
 
 
 //select text-model
-var selectedModel = 'gpt-3.5-turbo-0125';
-change_selected_model(selectedModel)
+var selectedImageModel = 'dall-e-3';
+change_selected_model(selectedImageModel)
 
 // prompt-responses transfer
 promptResponseList = []
@@ -91,13 +56,7 @@ var messages = null;
 // get the prompt
 const button = document.getElementById('submit-button');
 const promptElement = document.getElementById('prompt-text-area');
-// send prompt through click or enter button
 button.addEventListener('click', sendThroughClick);
-promptElement.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        sendThroughClick(event);
-    }
-});
 storedData = null;
 i=0;
 
@@ -121,17 +80,24 @@ var tabName = null
 function sendThroughClick(event) {
             userPrompt = document.getElementById('prompt-text-area').value;
             createDivPrompt(userPrompt)
-            document.getElementById('load-animation').style.display = 'flex';
             if (rememberContext == false || messages == null) {
                 console.log('here')
                 messages = [
                     {"role": "system", "content": role},
                     {"role": "user", "content": userPrompt}
                     ]
+                i=0;
                 }
                 else {
-                    messages.push({"role": "user", "content": userPrompt})
-
+                if (role === messages[i-1]['content']) {
+                    messages.push(
+                    {"role": "user", "content": userPrompt}
+                    )
+                    }
+                else {
+                    messages.push({"role": "system", "content": role},
+                    {"role": "user", "content": userPrompt}
+                    ) }
 
             }
 
@@ -186,7 +152,6 @@ function sendThroughClick(event) {
             console.log("current", current_chats_data)
 
             const final_response_text = response_text + "\nTokens used : " + tokens_used.toString();
-            document.getElementById('load-animation').style.display = 'none';
             createDivResponse(final_response_text)
             console.log(data['success']['response'])
             console.log(messages)
@@ -308,16 +273,9 @@ function make_clickable_tabs() {
             current_chats_data.forEach(function(prompt_response) {
                 createDivPrompt(prompt_response['prompt'])
                 createDivResponse(prompt_response['response'])
-                tabName = tab.textContent;
                 console.log(prompt_response)
+                tabName = tab.textContent;
             })
-            len_current_chats = current_chats_data.length;
-            messages = [
-                    {"role": "system", "content": role},
-                    {"role": "user", "content": current_chats_data[len_current_chats - 1]['prompt']},
-                    {"role": "assistant", "content": current_chats_data[len_current_chats - 1]['response']}
-                    ]
-            console.log("previous prompt response", messages[1]['content'], messages[2]['content'])
             console.log(current_chats_data)
             console.log(tabName)
         })
@@ -333,8 +291,30 @@ function give_date_as_tab_name() {
     console.log("tabname : ", tabName)
 }
 
+
+
+
+
 }
 
+function toggle_n_responses_view(selectedModel) {
+    dall_e2_size = document.getElementById('dall-e-2-sizes')
+    dall_e3_size = document.getElementById('dall-e-3-sizes')
+    quality = document.getElementById('quality')
+    slider_response_no = document.getElementById('slider-container-img-responses')
+    if (selectedModel == "dall-e-3") {
+        slider_response_no.style.display = 'none';
+        dall_e3_size.style.display = 'block';
+        dall_e2_size.style.display = 'none';
+        quality.style.display = 'block';
+    }
+    else if (selectedModel == "dall-e-2") {
+        slider_response_no.style.display = 'block';
+        dall_e3_size.style.display = 'none';
+        dall_e2_size.style.display = 'block';
+        quality.style.display = 'none';
+    }
+}
 
 
 function load_chat_tabs(tabs_list, sidebar) {
@@ -346,10 +326,10 @@ function load_chat_tabs(tabs_list, sidebar) {
 }
 
 
-function make_chat_button_functional() {
-    const new_chat_button = document.getElementById('new-chat-button')
-    new_chat_button.addEventListener('click', function() {
-    window.location.href = '';
+function make_image_button_functional() {
+    const new_image_button = document.getElementById('new-image-button')
+    new_image_button.addEventListener('click', function() {
+    window.location.href = '/imageGenerator';
 })
 }
 
@@ -427,23 +407,23 @@ response_no_slider.addEventListener('change', function() {
 }
 
 function change_selected_model(selectedModel) {
-modelDict = {"GPT-3.5-turbo": "gpt-3.5-turbo-0125",
-            "GPT-4-turbo" : "gpt-4-turbo",
-            "GPT-4" : "gpt-4",
-            "GPT-4o": "gpt-4o"}
+    modelDictImg = {"Dall-E 2": "dall-e-2",
+                "Dall-E 3" : "dall-e-3"}
 
-chatModelsSelectBox = document.getElementsByClassName('chatModelSelect');
-chatModelArray = Array.from(chatModelsSelectBox);
+    chatModelsSelectBox = document.getElementsByClassName('imageModelSelect');
+    chatModelArray = Array.from(chatModelsSelectBox);
 
-chatModelArray.forEach(function(model) {
-        model.addEventListener('click', function() {
-            if (model.textContent in modelDict) {
-                selectedModel = modelDict[model.textContent];
-                document.getElementById('select-model-button').textContent = model.textContent;
-                console.log(model.textContent, selectedModel)
-            }
-        })
-    });
+    chatModelArray.forEach(function(model) {
+            model.addEventListener('click', function() {
+                if (model.textContent in modelDictImg) {
+                    console.log(model.textContent)
+                    selectedModel = modelDictImg[model.textContent];
+                    document.getElementById('select-model-button').textContent = model.textContent;
+                    console.log(model.textContent, selectedModel)
+                    toggle_n_responses_view(selectedModel)
+                }
+            })
+        });
 }
 
 

@@ -7,17 +7,17 @@ client = OpenAI()
 
 
 def get_chat_response(model, messages, max_tokens, frequency_penalty, no_of_responses, stream):
-    # response = client.chat.completions.create(
-    #     model=model,
-    #     messages=messages,
-    #     max_tokens=max_tokens,
-    #     frequency_penalty=frequency_penalty,
-    #     n=no_of_responses,
-    #     stream=False
-    # )
-    # return response.choices[0].message.content, response.usage.total_tokens
+    response = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        max_tokens=max_tokens,
+        frequency_penalty=frequency_penalty,
+        n=no_of_responses,
+        stream=False
+    )
+    return response.choices[0].message.content, response.usage.total_tokens
     # return ["Hello! How can I assist you today?", 27]
-    return """The `async` function in JavaScript is part of the ES2017 standard and helps in writing asynchronous code in a more synchronous/linear manner. Remember, using the 'await' keyword will pause execution of your asynchronous operations - which could impact performance if not managed correctly. You should try to limit usage of 'await' where possible or manage it within Promise.all() blocks etc...when dealing with lots of operations at once (like API calls).""", 27
+    # return """The `async` function in JavaScript is part of the ES2017 standard and helps in writing asynchronous code in a more synchronous/linear manner. Remember, using the 'await' keyword will pause execution of your asynchronous operations - which could impact performance if not managed correctly. You should try to limit usage of 'await' where possible or manage it within Promise.all() blocks etc...when dealing with lots of operations at once (like API calls).""", 27
 
 
 
@@ -28,25 +28,23 @@ nlp = spacy.load("en_core_web_sm")
 
 def generate_chat_name(text):
     # remove system words
-    text = text.replace('system', "")
-    text = text.replace('user', "")
-    text = text.replace('content', "")
-    text = text.replace('assistant', "")
-    text = text.replace('helpful', "")
-    text = text.replace('role', "")
+    words_to_remove = ['system', 'user', 'content', 'assistant', 'helpful', 'role']
+    for word in words_to_remove:
+        text = text.replace(word, "")
 
     # Process the text with spaCy
     doc = nlp(text)
 
     # Extract keywords (nouns and proper nouns)
-    keywords = [token.text for token in doc if token.pos_ in ('NOUN', 'PROPN') and not token.is_stop]
+    keywords = [token.text for token in doc if token.pos_ in ('NOUN', 'PROPN', 'ADJ') and not token.is_stop]
 
     # Get the most common words
-    common_words = Counter(keywords).most_common(3)
+    common_words = Counter(keywords).most_common()
 
     # Generate the chat name by combining the most common words
-    chat_name = ' '.join(word for word, _ in common_words)
-
+    chat_name = ' '.join(word for word, _ in common_words[:4])
+    if chat_name == "" or chat_name is None:
+        return "not given"
     return chat_name
 
 

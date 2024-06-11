@@ -115,8 +115,14 @@
                   </p>
               </div>
           </div>
-          <div id="fixed-at-bottom">
-          <input id="file-input-element" type="file">
+            <div id="load-animation-container">
+                <div id="load-animation">
+                <strong>Generating Response</strong>
+                <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+                </div>
+            </div>
+            <div id="fixed-at-bottom">
+          <input id="file-input-element" type="file" accept="image/*" multiple="false">
           <button id="file-input-button"><img id="file-input-image" src="{% static 'gptApp/images/file.png' %}" alt="file-input-button"></button>
           <textarea id="prompt-text-area"></textarea>
           <button id="submit-button"><img id="submit-image" src="{% static 'gptApp/images/send-blue.png' %}" alt="prompt button"></button>
@@ -124,7 +130,7 @@
       </div>
       </div>
     </div>
-        
+
     <script src="{% static 'gptApp/js/bootstrap.bundle.min.js' %}">
       function openWebsite(websiteURL) {
             window.open("history.html", '_');
