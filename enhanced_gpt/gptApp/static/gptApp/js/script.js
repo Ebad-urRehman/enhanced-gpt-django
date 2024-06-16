@@ -39,6 +39,35 @@ var temperature_max = temperature_slider.max
 change_temperature(temperature_slider, current_temp_value, temperature_max)
 
 
+const fileInput = document.getElementById('file-input-element');
+const imageContainer = document.getElementById('prompt-image');
+fileInput.addEventListener('change', function() {
+    // Clears any existing images
+    while (imageContainer.firstChild) {
+        imageContainer.removeChild(imageContainer.firstChild);
+    }
+
+    // Gets the selected file
+    const selectedFile = this.files[0];
+
+    if (selectedFile) {
+        const reader = new FileReader();
+
+        // Reads the file as a data URL
+        reader.readAsDataURL(selectedFile);
+
+        // When the file is read, creates an img element and sets its source to the data URL
+        reader.onload = function(e) {
+            const imgElement = document.getElementById('prompt-image');
+            imgElement.src = e.target.result;
+            imgElement.alt = 'Uploaded Image';
+            imgElement.style.display = 'inline-block';
+            // Appends the img element to the image container
+            imageContainer.appendChild(imgElement);
+        }
+    }
+});
+
 // Role
 var role = 'You are a helpful assistant.';
 role_selector = document.getElementById('role-input');

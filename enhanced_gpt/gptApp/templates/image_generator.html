@@ -61,22 +61,28 @@
 
             <div id="dall-e-2-sizes">
                 <h4><label for="select-size">  Select Size</label></h4>
-                <h6><label for="256"><input type="radio" id="256" class="select-size" name="select-size" value="256x256">  256x256</label></h6>
+                <h6><label for="256"><input type="radio" id="256" class="select-size" name="select-size" value="256x256" checked>  256x256</label></h6>
                 <h6><label for="512"><input type="radio" id="512" class="select-size" name="select-size" value="512x512">  512x512</label></h6>
                 <h6><label for="1024"><input type="radio" id="1024" class="select-size" name="select-size" value="1024x1024">  1024x1024</label></h6>
             </div>
 
             <div id="dall-e-3-sizes">
                 <h5><label for="select-size_">  Select Size</label></h5>
-                <h6><label for="1024_"><input type="radio" id="1024_" class="select-size_" name="select-size_" value="1024x1024">  1024x1024</label></h6>
+                <h6><label for="1024_"><input type="radio" id="1024_" class="select-size_" name="select-size_" value="1024x1024" checked>  1024x1024</label></h6>
                 <h6><label for="1792"><input type="radio" id="1792" class="select-size_" name="select-size_" value="1792x1024">  1792x1024</label></h6>
                 <h6><label for="1792_"><input type="radio" id="1792_" class="select-size_" name="select-size_" value="1024x1792">  1024x1792</label></h6>
             </div>
 
             <div id="quality">
                 <h5><label for="select-quality">  Select Quality</label></h5>
-                <h6><label for="hd"><input type="radio" id="hd" class="select-quality" name="select-quality" value="hd">  HD</label></h6>
+                <h6><label for="hd"><input type="radio" id="hd" class="select-quality" name="select-quality" value="hd" checked>  HD</label></h6>
                 <h6><label for="standard"><input type="radio" id="standard" class="select-quality" name="select-quality" value="standard">  Standard</label></h6>
+            </div>
+
+            <div id="style">
+                <h5><label for="select-style">  Select Style</label></h5>
+                <h6><label for="vivid"><input type="radio" id="vivid" class="select-style" name="select-style" value="vivid" checked>  Vivid</label></h6>
+                <h6><label for="natural"><input type="radio" id="natural" class="select-style" name="select-style" value="natural">  Natural</label></h6>
             </div>
 
             <div id="slider-container-img-responses">
@@ -96,7 +102,7 @@
         </div>
       <div style="width: 100%; padding-top: 80px;">
         <div style="justify-content: center; padding-left:270px; width: 100%; display: flex; text-align: center;">
-          <div style="width:70%; align-self:center; margin-bottom:70px;">
+          <div id="content-container" style="width:70%; align-self:center; margin-bottom:70px;">
             <h1>Image Generation</h1>
               <div id="prompt-responses">
                   <p style="font-family: Arial; text-align:left; background-color: gainsboro; border:2px solid gainsboro; border-radius:8px;">
@@ -105,13 +111,23 @@
                     ✏️ Edit an Image(Change background and objects in image)<br>
                     🔄 Make Variations of an Image(Dall-E can make variations of images for you)<br>
                   </p>
+                  <div class="img-options">
+                      <img class="img-option" src="{% static 'gptApp/images/edit_black.png' %}">
+                      <img class="img-option" src="{% static 'gptApp/images/variations_black.png' %}">
+                      <img class="img-option" src="{% static 'gptApp/images/copy_black.png' %}">
+                      <img class="img-option" src="{% static 'gptApp/images/download_black.png' %}">
+                      <img class="img-option" src="{% static 'gptApp/images/expand_black.png' %}">
+
+                  </div>
               </div>
+
           </div>
           <div id="fixed-at-bottom">
           <input id="file-input-element" type="file" accept="image/*" multiple="false">
-          <button id="file-input-button"><img id="file-input-image" src="{% static 'gptApp/images/file.png' %}" alt="file-input-button"></button>
+          <button id="file-input-button" title="Upload an Image"><img id="file-input-image" src="{% static 'gptApp/images/document_black.png' %}" alt="file-input-button"><img src="{% static 'gptApp/images/file.png' %}" id="prompt-image" style="width:25px; height:25px; display:none;"></button>
+
           <textarea id="prompt-text-area"></textarea>
-          <button id="submit-button"><img id="submit-image" src="{% static 'gptApp/images/send-blue.png' %}" alt="prompt button"></button>
+          <button id="submit-button" title="Send"><img id="submit-image" src="{% static 'gptApp/images/send_black.png' %}" alt="prompt button"></button>
           </div>
       </div>
       </div>
@@ -126,6 +142,25 @@
     <script src="{% static 'gptApp/js/markdown.js' %}"></script>
 <!--    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>-->
 
-
+    <script>
+        // Pass static URLs to JavaScript
+        var staticUrls = {
+            editButton: "{% static 'gptApp/images/edit_black.png' %}",
+            variationButton: "{% static 'gptApp/images/variations_black.png' %}",
+            copyButton: "{% static 'gptApp/images/copy_black.png' %}",
+            downloadButton: "{% static 'gptApp/images/download_black.png' %}",
+            fullScreenButton: "{% static 'gptApp/images/expand_black.png' %}",
+            editButtonHover: "{% static 'gptApp/images/edit.png' %}",
+            variationButtonHover: "{% static 'gptApp/images/variations_blue.png' %}",
+            copyButtonHover: "{% static 'gptApp/images/copy.png' %}",
+            downloadButtonHover: "{% static 'gptApp/images/download_blue.png' %}",
+            fullScreenButtonHover: "{% static 'gptApp/images/full-screen.png' %}",
+            closeButtonModal: "{% static 'gptApp/images/close.png' %}",
+            inputImageButtonHover: "{% static 'gptApp/images/file.png' %}",
+            inputImageButton: "{% static 'gptApp/images/document_black.png' %}",
+            sendButton: "{% static 'gptApp/images/send_black.png' %}",
+            sendButtonHover: "{% static 'gptApp/images/send-blue.png' %}"
+        };
+    </script>
 </body>
 </html>

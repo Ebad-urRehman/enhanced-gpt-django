@@ -31,6 +31,7 @@ urlpatterns = [
     path('pdfReader/', views.pdf_reader, name="pdf-reader"),
     path('pdfReader/history', views.pdf_reader_history, name="pdf-reader-his"),
     path('receive-data/', views.receive_data, name='receive-data'),
+    path('receive-img-response/', views.receive_image_response, name='receive-image'),
 
     # urls for register and login
     path('register/', views.register_user, name='register'),
@@ -40,12 +41,12 @@ urlpatterns = [
     path('store-chat-tabs/', views.store_chat_tabs, name='store-tab-chats'),
     path('load-chat-tabs/', views.load_chat_tabs, name='load-tab-chats'),
     # path('store-image-tabs/', views.store_image_tabs, name='store-image-tabs'),
-    # path('load-image-tabs/', views.load_image_tabs, name='load-image-tabs'),
+    path('load-image-tabs/', views.load_image_tabs, name='load-image-tabs'),
     #
     # # urls for storing and loading history
     path('store-chats-history/', views.store_chats_history, name='store-chats-history'),
     path('load-chats-history/', views.load_chats_history, name='load-chats-history'),
-    # path('store-images-history/', views.store_images_history, name='store-images-history'),
+    path('store-images-history/', views.store_images_history, name='store-images-history'),
     # path('load-images-history/', views.load_images_history, name='load-images-history')
 
 ]

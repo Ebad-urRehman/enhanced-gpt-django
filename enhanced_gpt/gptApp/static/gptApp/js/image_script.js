@@ -1,11 +1,12 @@
 window.onload = function () {
 
+
 var tabList = []
-var current_chats_data = []
+var current_images_data = []
 
 
 // fetch the meta data from database when windows load
-fetch('/load-chat-tabs/', {
+fetch('/load-image-tabs/', {
                 method: 'POST'
                 })
                 .then(response => response.json())
@@ -13,7 +14,7 @@ fetch('/load-chat-tabs/', {
 
                 console.log('Success:', get_metadata);
                 const sideBarDiv = document.getElementById('file-select-sidebar');
-                tabList = get_metadata['success']['chat_tab_list']
+                tabList = get_metadata['success']['image_tab_list']
                 console.log(tabList)
                 if (tabList != null) {
                     if(tabList.length != 0) {
@@ -27,31 +28,25 @@ fetch('/load-chat-tabs/', {
 make_image_button_functional()
 
 // input file
-input_file_button = document.getElementById('file-input-button');
-file_browse_button = document.getElementById('file-input-element');
+make_input_file_button_functional()
 
-input_file_button.addEventListener('click', function() {
-    file_browse_button.click();
-});
-
+// Image Input button
+browse_image();
 
 // choose no of responses
-const response_no_slider = document.getElementById('slider-no-responses')
-var current_res_no_value = response_no_slider.value
-var response_no_max = response_no_slider.max
-change_response_no(response_no_slider, response_no_max)
+var current_res_no_value = 1
+change_response_no()
 
 
 
 //select text-model
 var selectedImageModel = 'dall-e-3';
 change_selected_model(selectedImageModel)
+console.log("selected model", selectedImageModel)
 
 // prompt-responses transfer
 promptResponseList = []
 var prompt = '';
-response_no = 0;
-var messages = null;
 
 // get the prompt
 const button = document.getElementById('submit-button');
@@ -59,6 +54,22 @@ const promptElement = document.getElementById('prompt-text-area');
 button.addEventListener('click', sendThroughClick);
 storedData = null;
 i=0;
+
+// size
+size = "1024x1024"
+// by default dall_e3 sizes are loaded
+select_size_3();
+
+// add dall-e-2 sizes
+select_size_2();
+
+// quality
+quality = "hd";
+set_quality();
+
+// set style
+var style = "vivid";
+set_style()
 
 // history tabs
 show_history_button = document.getElementById('hover-button-history-bar')
@@ -73,6 +84,9 @@ document.getElementById('history-bar').addEventListener('mouseleave', function()
     show_history_button.style.display = 'block';
 });
 
+//  change color and appearance on hover
+//input_file_button = document.getElementById(file_input_button)
+
 
 var userPrompt = null;
 var tabName = null
@@ -80,48 +94,26 @@ var tabName = null
 function sendThroughClick(event) {
             userPrompt = document.getElementById('prompt-text-area').value;
             createDivPrompt(userPrompt)
-            if (rememberContext == false || messages == null) {
-                console.log('here')
-                messages = [
-                    {"role": "system", "content": role},
-                    {"role": "user", "content": userPrompt}
-                    ]
-                i=0;
-                }
-                else {
-                if (role === messages[i-1]['content']) {
-                    messages.push(
-                    {"role": "user", "content": userPrompt}
-                    )
-                    }
-                else {
-                    messages.push({"role": "system", "content": role},
-                    {"role": "user", "content": userPrompt}
-                    ) }
-
-            }
 
             promptElement.value = ""; // Clear the input
 
             // Create FormData object and append variables
             const dataToSend = {
-                'messages': messages,
-                'model': selectedModel,
-                'tokens': current_tokens_value,
-                'frequency': current_frequency_value,
-                'no-responses': current_res_no_value,
-                'temperature': current_temp_value,
-                'remember_context': rememberContext,
-                'stream': setStream,
-                'tab-name': tabName
+                'prompt': userPrompt,
+                'model': selectedImageModel,
+                'n': current_res_no_value,
+                'size': size,
+                'tab-name': tabName,
+                "response": null,
+                "style": style,
+                "quality": quality
             }
 //            console.log(messages)
-
             const jsonData = JSON.stringify(dataToSend);
             console.log(jsonData)
 
             // Send data using Fetch API
-            fetch('/receive-data/', {
+            fetch('/receive-img-response/', {
                 method: 'POST',
                 body: jsonData
             })
@@ -131,8 +123,11 @@ function sendThroughClick(event) {
             // operations on data
             console.log('Success:', data);
 
-            let response_text = data['success']['response'][0];
-            let tokens_used = data['success']['response'][1];
+            let urls_list = data['success']['response'];
+//            let response_b64 = ["https://as2.ftcdn.net/v2/jpg/01/53/54/45/1000_F_153544544_aInTyZpNa3oVSJEs8rviYX5xLo7IKwKl.jpg",
+//                                "https://as2.ftcdn.net/v2/jpg/01/53/54/45/1000_F_153544544_aInTyZpNa3oVSJEs8rviYX5xLo7IKwKl.jpg",
+//                                "256x256"];
+//            console.log(response_b64)
             console.log('tab lists', tabList)
             if (tabName == null) {
                 tabName = data['success']['tab-name'];
@@ -140,35 +135,28 @@ function sendThroughClick(event) {
                 if (tabName == "not given") {
                     give_date_as_tab_name();
                 }
-                console.log(current_chats_data)
+                console.log(current_images_data)
                 console.log(tabList);
                 store_chat_tabs();
             }
-            messages.push({"role": "assistant", "content": response_text})
 
-            // pushing data into current_chats_data
-            current_chats_data.push({'prompt' : userPrompt,
+            // pushing data into current_images_data
+            current_images_data.push({'prompt' : userPrompt,
                                             'response' : data['success']['response'][0]})
-            console.log("current", current_chats_data)
+            console.log("current", current_images_data)
+//            image_url = data['success']['response']
+              extractImageBase64(urls_list)
+//              urlToBase64(urls_list[0]).then(base64 => {
+//              console.log(base64); // Logs the Base64 encoded string
+//                 });
+//            console.log(data['success']['response'])
+//            createDivResponseImage(data['success']['response'], 1024, 1024)
+            console.log(current_images_data)
 
-            const final_response_text = response_text + "\nTokens used : " + tokens_used.toString();
-            createDivResponse(final_response_text)
-            console.log(data['success']['response'])
-            console.log(messages)
-            i+=1;
-            console.log(current_chats_data)
-            // storing chats data to database
-//            if (rememberContext) {
-//                last_message_list = current_chats_data.length - 1;
-//
-//            }
-//            else {
-//
-//            }
             console.log("tabname given", tabName);
             fetch('/store-chats-history/', {
                     method: 'POST',
-                    body: JSON.stringify({"prompt_response_dict": current_chats_data,
+                    body: JSON.stringify({"prompt_response_dict": current_images_data,
                                            "tab_name": tabName})
                 })
                 .then(response => response.json())
@@ -182,19 +170,67 @@ function sendThroughClick(event) {
           .catch(error => console.error('Error:', error));
 }
 
-//function loadTabContent() {
-////    loadTabContent(messages)
-//prompt_response_list = messages.forEach(function(list) {
-//    list.forEach(function(dict) {
-//        if (dict.role=== "user") {
-//            createDivPrompt(dict['content']);
-//        }
-//        else if (dict.role === "assistant") {
-//            createDivResponse(dict['content']);
-//        }
-//    })
-//})
-//}
+function make_input_file_button_functional() {
+input_file_button = document.getElementById('file-input-button');
+file_browse_button = document.getElementById('file-input-element');
+const send_button = document.getElementById('submit-button')
+input_file_button.addEventListener('click', function() {
+    file_browse_button.click();
+});
+
+const input_img = document.getElementById('file-input-image')
+input_file_button.addEventListener('mouseenter', function() {
+    input_img.src = staticUrls.inputImageButtonHover
+})
+input_file_button.addEventListener('mouseleave', function() {
+    input_img.src = staticUrls.inputImageButton
+})
+
+const submit_image = document.getElementById('submit-image')
+send_button.addEventListener('mouseenter', function() {
+    submit_image.src = staticUrls.sendButtonHover
+})
+send_button.addEventListener('mouseleave', function() {
+    submit_image.src = staticUrls.sendButton
+})
+}
+
+function browse_image() {
+const fileInput = document.getElementById('file-input-element');
+const imageContainer = document.getElementById('prompt-image');
+
+fileInput.addEventListener('change', function() {
+    // Clears any existing images
+    while (imageContainer.firstChild) {
+        imageContainer.removeChild(imageContainer.firstChild);
+    }
+
+    // Gets the selected file
+    const selectedFile = this.files[0];
+    console.log("selected file", selectedFile)
+
+    if (selectedFile) {
+        const reader = new FileReader();
+        console.log("reader", reader)
+        // Reads the file as a data URL
+        reader.readAsDataURL(selectedFile);
+
+        console.log("reader after reading", reader)
+        // When the file is read, creates an img element and sets its source to the data URL
+        reader.onload = function(e) {
+        console.log("E", e)
+            const imgElement = document.getElementById('prompt-image');
+            imgElement.src = e.target.result;
+            console.log(e.target.result)
+            imgElement.alt = 'Uploaded Image';
+            imgElement.style.display = 'inline-block';
+            console.log("img", imgElement)
+            // Appends the img element to the image container
+        }
+    }
+});
+}
+
 
 
 // functions
@@ -217,8 +253,8 @@ function store_chat_tabs() {
     }
 
                 let json_meta_data = {
-                    'chat_tab_list': tabList,
-                    'image_tab_list': null,
+                    'chat_tab_list': null,
+                    'image_tab_list': tabList,
                     'settings': null
                 }
                 json_meta_data = JSON.stringify(json_meta_data);
@@ -268,15 +304,15 @@ function make_clickable_tabs() {
         .then(response => response.json())
         .then(chats_history => {
             console.log('Success', chats_history)
-            current_chats_data = chats_history['success'];
+            current_images_data = chats_history['success'];
 
-            current_chats_data.forEach(function(prompt_response) {
+            current_images_data.forEach(function(prompt_response) {
                 createDivPrompt(prompt_response['prompt'])
-                createDivResponse(prompt_response['response'])
+                createDivResponseImage(prompt_response['response'][0], 1024, 1024)
                 console.log(prompt_response)
                 tabName = tab.textContent;
             })
-            console.log(current_chats_data)
+            console.log(current_images_data)
             console.log(tabName)
         })
 
@@ -292,30 +328,195 @@ function give_date_as_tab_name() {
 }
 
 
+function change_selected_model() {
+    modelDictImg = {"Dall-E 2": "dall-e-2",
+                "Dall-E 3" : "dall-e-3"}
 
+    chatModelsSelectBox = document.getElementsByClassName('imageModelSelect');
+    chatModelArray = Array.from(chatModelsSelectBox);
 
-
+    chatModelArray.forEach(function(model) {
+            model.addEventListener('click', function() {
+                if (model.textContent in modelDictImg) {
+                    console.log(model.textContent)
+                    selectedImageModel = modelDictImg[model.textContent];
+                    document.getElementById('select-model-button').textContent = model.textContent;
+                    console.log(model.textContent, selectedImageModel)
+                    toggle_n_responses_view(selectedImageModel)
+                    return selectedImageModel;
+                }
+            })
+        });
 }
 
-function toggle_n_responses_view(selectedModel) {
+
+
+function extractImageBase64(imageUrls) {
+            let size = imageUrls[imageUrls.length - 1];
+
+            size = size.split('x');
+            let width = parseInt(size[0]);
+            let height = parseInt(size[1]);
+            const container = document.getElementById('content-container')
+            console.log("wh", width, height)
+            if (width > parseInt(755)) {
+                img_width = width * 2.5/4
+                img_height = height * 2.5/4
+            }
+            else {
+                img_width = width;
+                img_height = height;
+            }
+            console.log(width, height)
+            for (let i=0; i < imageUrls.length - 1; i++) {
+                console.log(imageUrls[i]);
+                // Create an image element
+                var img = new Image();
+                img.crossOrigin = 'Anonymous';
+                // Set the image source URL
+                img.src = imageUrls[i];
+
+                console.log("wh", width, height)
+                // Create a canvas element
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+
+                // When the image has loaded, draw it onto the canvas
+                img.onload = function() {
+                    // Set canvas dimensions to match the image
+                    canvas.width = width;
+                    canvas.height = height;
+                    console.log("loading")
+                    // Draw the image onto the canvas
+                    ctx.drawImage(img, 0, 0);
+
+                    // Get the Base64-encoded data from the canvas
+                    let base64Data = canvas.toDataURL('image/png'); // Change to 'image/png' if needed
+                    console.log(base64Data)
+                    // Log or use the Base64 data as needed
+                    createDivResponseImage(base64Data, img_width, img_height, width, height)
+                };
+            }
+
+        }
+
+
+async function urlToBase64(imageUrls) {
+    let size = imageUrls[imageUrls.length - 1];
+    url = imageUrls[0]
+    size = size.split('x');
+    width = parseInt(size[0]);
+    height = parseInt(size[1]);
+//    for (i=0; i < imageUrls.length - 2; i++) {
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const blob = await response.blob();
+
+            const reader = new FileReader();
+
+            const base64data = new Promise((resolve, reject) => {
+                reader.onloadend = () => {
+                    resolve(reader.result);
+                };
+
+                reader.onerror = reject;
+
+                reader.readAsDataURL(blob);
+            });
+
+            return await base64data;
+        } catch (error) {
+            console.error('Error converting URL to Base64:', error);
+        }
+//    }
+}
+
+
+function toggle_n_responses_view(selectedImageModel) {
     dall_e2_size = document.getElementById('dall-e-2-sizes')
     dall_e3_size = document.getElementById('dall-e-3-sizes')
-    quality = document.getElementById('quality')
+    quality_element = document.getElementById('quality')
     slider_response_no = document.getElementById('slider-container-img-responses')
-    if (selectedModel == "dall-e-3") {
+    style_element = document.getElementById('style');
+    if (selectedImageModel == "dall-e-3") {
         slider_response_no.style.display = 'none';
+        current_res_no_value = 1;
         dall_e3_size.style.display = 'block';
         dall_e2_size.style.display = 'none';
-        quality.style.display = 'block';
+        quality_element.style.display = 'block';
+        style_element.style.display = 'block';
+
     }
-    else if (selectedModel == "dall-e-2") {
+    else if (selectedImageModel == "dall-e-2") {
+        size = "256x256"
         slider_response_no.style.display = 'block';
+        current_res_no_value = 1;
         dall_e3_size.style.display = 'none';
         dall_e2_size.style.display = 'block';
-        quality.style.display = 'none';
+        quality_element.style.display = 'none';
+        style_element.style.display = 'none';
     }
 }
+// removed from here
 
+
+
+function select_size_3() {
+        // select size
+        dall_e3_sizes = document.getElementById('dall-e-3-sizes');
+        const size_inputs = dall_e3_sizes.querySelectorAll('input[name="select-size_"]');
+        const size_arr_3 = Array.from(size_inputs);
+        console.log(size_arr_3)
+        size_arr_3.forEach(function(size_element) {
+            size_element.addEventListener('click', function() {
+                size = size_element.value
+                console.log(size)
+            })
+})
+}
+
+function select_size_2() {
+        // select size
+        dall_e2_sizes = document.getElementById('dall-e-2-sizes');
+        const size_inputs = dall_e2_sizes.querySelectorAll('input[name="select-size"]');
+        const size_arr_2 = Array.from(size_inputs);
+        console.log(size_arr_2)
+        size_arr_2.forEach(function(size_element) {
+            size_element.addEventListener('click', function() {
+                size = size_element.value
+                console.log(size)
+            })
+})
+}
+
+function set_quality() {
+        quality_element = document.getElementById('quality')
+        const quality_inputs = quality_element.querySelectorAll('input[name="select-quality"]');
+        const quality_arr = Array.from(quality_inputs);
+        quality_arr.forEach(function(quality_element) {
+            quality_element.addEventListener('click', function() {
+                quality = quality_element.value
+                console.log(quality)
+        })
+        })
+        }
+
+function set_style() {
+        style_element = document.getElementById('style');
+        const style_inputs = style_element.querySelectorAll('input[name="select-style"]');
+        const style_arr = Array.from(style_inputs);
+        style_arr.forEach(function(style_element) {
+            style_element.addEventListener('click', function() {
+                style = style_element.value
+                console.log(style)
+    })
+    })
+    }
 
 function load_chat_tabs(tabs_list, sidebar) {
         for (let i = tabs_list.length - 1; i >= 0; i--) {
@@ -398,32 +599,15 @@ frequency_slider.addEventListener('change', function() {
     });
 }
 
-function change_response_no(response_no_slider, response_no_max) {
+function change_response_no() {
+const response_no_slider = document.getElementById('slider-no-responses')
+let response_no_max = response_no_slider.max
 response_no_slider.addEventListener('change', function() {
     current_res_no_value = response_no_slider.value
     document.getElementById('slider-res-no-val').innerHTML = current_res_no_value + '/' + response_no_max;
     console.log("Response no value : ", current_res_no_value)
+    return current_res_no_value;
 });
-}
-
-function change_selected_model(selectedModel) {
-    modelDictImg = {"Dall-E 2": "dall-e-2",
-                "Dall-E 3" : "dall-e-3"}
-
-    chatModelsSelectBox = document.getElementsByClassName('imageModelSelect');
-    chatModelArray = Array.from(chatModelsSelectBox);
-
-    chatModelArray.forEach(function(model) {
-            model.addEventListener('click', function() {
-                if (model.textContent in modelDictImg) {
-                    console.log(model.textContent)
-                    selectedModel = modelDictImg[model.textContent];
-                    document.getElementById('select-model-button').textContent = model.textContent;
-                    console.log(model.textContent, selectedModel)
-                    toggle_n_responses_view(selectedModel)
-                }
-            })
-        });
 }
 
 
@@ -448,24 +632,164 @@ function createDivPrompt(userPrompt) {
     prompt_text.textContent = userPrompt;
 }
 
-function createDivResponse(response) {
-
+function createDivResponseImage(response_b64, width, height, full_width, full_height) {
     // get main div
     const container_prompt_responses = document.getElementById('prompt-responses')
 
-    // create main div and assign class
+//    // create main div and assign class
     const responseDiv = document.createElement('div');
     responseDiv.setAttribute('class', 'response-div');
 
-    //create text div with in it
-    const response_text = document.createElement('p');
-    response_text.setAttribute('class', 'response');
+    //create image div with in it
+    const response_img = document.createElement('img');
+    response_img.setAttribute('class', 'response');
+    response_img.setAttribute('src', response_b64);
+    response_img.setAttribute('width', width);
+    response_img.setAttribute('height', height);
 
     // add child to it
-    responseDiv.appendChild(response_text);
+    responseDiv.appendChild(response_img);
     container_prompt_responses.appendChild(responseDiv);
 
-    renderMarkdown(response, response_text);
+
+    // adding other image buttons for image editing
+    const edit_button = document.createElement('img')
+    const variation_button = document.createElement('img')
+    const copy_button = document.createElement('img')
+    const download_button = document.createElement('img')
+    const full_screen_button = document.createElement('img')
+
+    //giving sources to each image
+    edit_button.setAttribute('src', staticUrls.editButton)
+    variation_button.setAttribute('src', staticUrls.variationButton)
+    copy_button.setAttribute('src', staticUrls.copyButton)
+    download_button.setAttribute('src', staticUrls.downloadButton)
+    full_screen_button.setAttribute('src', staticUrls.fullScreenButton)
+
+    // giving classes to each button
+    edit_button.setAttribute('class', 'img-option')
+    edit_button.setAttribute('title', 'Edit Image')
+    variation_button.setAttribute('class', 'img-option')
+    variation_button.setAttribute('title', 'Make Variations')
+    copy_button.setAttribute('class', 'img-option')
+    copy_button.setAttribute('title', 'Copy Image')
+    download_button.setAttribute('class', 'img-option')
+    download_button.setAttribute('title', 'Download Image')
+    full_screen_button.setAttribute('class', 'img-option')
+    full_screen_button.setAttribute('title', 'Full Screen')
+
+    // adding event listeners to all options to change image
+    edit_button.addEventListener('mouseenter', function() {
+        edit_button.setAttribute('src', staticUrls.editButtonHover)
+    })
+    edit_button.addEventListener('mouseleave', function() {
+        edit_button.setAttribute('src', staticUrls.editButton)
+    })
+    variation_button.addEventListener('mouseenter', function() {
+        variation_button.setAttribute('src', staticUrls.variationButtonHover)
+    })
+    variation_button.addEventListener('mouseleave', function() {
+        variation_button.setAttribute('src', staticUrls.variationButton)
+    })
+    copy_button.addEventListener('mouseenter', function() {
+        copy_button.setAttribute('src', staticUrls.copyButtonHover)
+    })
+    copy_button.addEventListener('mouseleave', function() {
+        copy_button.setAttribute('src', staticUrls.copyButton)
+    })
+    download_button.addEventListener('mouseenter', function() {
+        download_button.setAttribute('src', staticUrls.downloadButtonHover)
+    })
+    download_button.addEventListener('mouseleave', function() {
+        download_button.setAttribute('src', staticUrls.downloadButton)
+    })
+    full_screen_button.addEventListener('mouseenter', function() {
+        full_screen_button.setAttribute('src', staticUrls.fullScreenButtonHover)
+    })
+    full_screen_button.addEventListener('mouseleave', function() {
+        full_screen_button.setAttribute('src', staticUrls.fullScreenButton)
+    })
+
+    // add eventlistners for functions
+//    full_screen_button.addEventListener('click', function() {
+//
+//    })
+
+full_screen_button.addEventListener('click', function() {
+    // Create the modal overlay
+    const modalOverlay = document.createElement('div');
+    modalOverlay.setAttribute('class', 'modalOverlay')
+
+    // Create the modal content
+    const modalContent = document.createElement('div');
+    modalContent.setAttribute('class', 'modalContent')
+
+    // Create the close button
+    const closeButtonModal = document.createElement('img');
+    closeButtonModal.setAttribute('class', 'img-close-modal')
+    closeButtonModal.setAttribute('src', staticUrls.closeButtonModal)
+
+    const para = document.createElement('p')
+    para.textContent = "Full Screen"
+
+    const image_full_screen = document.createElement('img')
+    image_full_screen.setAttribute('src', response_b64);
+    image_full_screen.setAttribute('width', full_width);
+    image_full_screen.setAttribute('height', full_height);
+
+    document.body.style.overflow = 'hidden'
+
+    // Append the close button to the modal content
+    modalContent.appendChild(para)
+    modalContent.appendChild(closeButtonModal);
+    modalContent.appendChild(image_full_screen)
+
+    // Append the modal content to the modal overlay
+    modalOverlay.appendChild(modalContent);
+
+    // Append the modal overlay to the body
+    document.body.appendChild(modalOverlay);
+
+    // Close the modal when the close button is clicked
+    closeButtonModal.addEventListener('click', function() {
+        document.body.removeChild(modalOverlay);
+        document.body.style.overflow = 'scroll'
+
+    });
+});
+
+    // making main-options div
+    let img_options = document.createElement('div')
+    img_options.setAttribute('class', 'img-options')
+    img_options.appendChild(edit_button)
+    img_options.appendChild(variation_button)
+    img_options.appendChild(copy_button)
+    img_options.appendChild(download_button)
+    img_options.appendChild(full_screen_button)
+
+    // appending to the main prompt-responses div
+    responseDiv.appendChild(img_options)
+
+    // add event listener to display image-options
+    response_img.addEventListener('mouseenter', function() {
+        img_options.style.display = 'block'
+    })
+    response_img.addEventListener('mouseleave', function() {
+        img_options.style.display = 'none'
+    })
+
+    img_options.addEventListener('mouseenter', function() {
+        img_options.style.display = 'block'
+        img_options.style.opacity = 1
+    })
+    img_options.addEventListener('mouseleave', function() {
+        img_options.style.display = 'none'
+        img_options.style.opacity = 0.7
+    })
+
+    console.log(response_b64)
 //    add text to prompt text element
 //    response_text.innerText = response;
+}
+
 }
