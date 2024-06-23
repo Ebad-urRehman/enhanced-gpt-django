@@ -19,9 +19,7 @@
     border-bottom-right-radius: 25px;
     background-color:#cdc5c5;
 }
-#submit-button:hover{
-   background-color: #727171;
-}
+
 
 
 
@@ -62,9 +60,6 @@
     border-top-left-radius: 25px;
     border-bottom-left-radius: 25px;
 }
-#file-input-button:hover {
-    background-color: #727171;
-}
 
 #file-input-element {
     display:none;
@@ -102,8 +97,8 @@
 }
 
 #file-select-sidebar > * {
-    background-color: #d4ffff;
-    border: 2px solid #d4ffff;
+    background-color: gainsboro;
+    border: 2px solid gainsboro;
     border-radius: 15px;
     border-bottom: 1px solid #d4ffff;
     border-top: 1px solid #d4ffff;
@@ -147,7 +142,7 @@
     top: 50%;
     right: 0;
     transform: translateY(-50%);
-    background-color: gainsboro;
+    background-color: azure;
     color: black;
     padding: 10px;
     cursor: pointer;
@@ -258,6 +253,24 @@ padding-bottom: 80px;
     bottom: 5%;
     left: 2%;
     display: none;
+    opacity: 0.7;
+    cursor: pointer;
+
+}
+
+.text-options {
+    position: relative;
+    width: 115px;
+    height: 40px;
+    border: 1px solid gainsboro;
+    background-color: gainsboro;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    bottom: 0%;
+    right: 2%;
+    display: block;
     opacity: 0.7;
     cursor: pointer;
 

@@ -138,6 +138,28 @@
     </script>
     <script src="{% static 'gptApp/js/script.js' %}"></script>
     <script src="{% static 'gptApp/js/markdown.js' %}"></script>
+    <script>
+        // Pass static URLs to JavaScript
+        var staticUrls = {
+            editButton: "{% static 'gptApp/images/edit_black.png' %}",
+            variationButton: "{% static 'gptApp/images/variations_black.png' %}",
+            copyButton: "{% static 'gptApp/images/copy_black.png' %}",
+            downloadButton: "{% static 'gptApp/images/download_black.png' %}",
+            fullScreenButton: "{% static 'gptApp/images/expand_black.png' %}",
+            editButtonHover: "{% static 'gptApp/images/edit.png' %}",
+            variationButtonHover: "{% static 'gptApp/images/variations_blue.png' %}",
+            copyButtonHover: "{% static 'gptApp/images/copy.png' %}",
+            downloadButtonHover: "{% static 'gptApp/images/download_blue.png' %}",
+            fullScreenButtonHover: "{% static 'gptApp/images/full-screen.png' %}",
+            closeButtonModal: "{% static 'gptApp/images/close.png' %}",
+            inputImageButtonHover: "{% static 'gptApp/images/file.png' %}",
+            inputImageButton: "{% static 'gptApp/images/document_black.png' %}",
+            sendButton: "{% static 'gptApp/images/send_black.png' %}",
+            sendButtonHover: "{% static 'gptApp/images/send-blue.png' %}",
+            deleteButton: "{% static 'gptApp/images/delete_black.png' %}",
+            deleteButtonHover: "{% static 'gptApp/images/delete_red.png' %}"
+        };
+    </script>
 <!--    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>-->
 
 

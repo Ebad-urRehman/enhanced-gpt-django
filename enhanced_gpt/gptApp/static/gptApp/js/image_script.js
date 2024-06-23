@@ -197,14 +197,9 @@ send_button.addEventListener('mouseleave', function() {
 
 function browse_image() {
 const fileInput = document.getElementById('file-input-element');
-const imageContainer = document.getElementById('prompt-image');
+const imageContainer = document.getElementById('prompt-responses');
 
 fileInput.addEventListener('change', function() {
-    // Clears any existing images
-    while (imageContainer.firstChild) {
-        imageContainer.removeChild(imageContainer.firstChild);
-    }
-
     // Gets the selected file
     const selectedFile = this.files[0];
     console.log("selected file", selectedFile)
@@ -219,13 +214,20 @@ fileInput.addEventListener('change', function() {
         // When the file is read, creates an img element and sets its source to the data URL
         reader.onload = function(e) {
         console.log("E", e)
-            const imgElement = document.getElementById('prompt-image');
-            imgElement.src = e.target.result;
-            console.log(e.target.result)
-            imgElement.alt = 'Uploaded Image';
-            imgElement.style.display = 'inline-block';
-            console.log("img", imgElement)
-            // Appends the img element to the image container
+        const imgElement = document.createElement('img');
+        imgElement.setAttribute('class', 'response')
+        imgElement.src = e.target.result;
+        console.log(e.target.result)
+        imgElement.alt = 'Uploaded Image';
+        if (parseInt(imgElement.naturalWidth) > parseInt(755)) {
+                imgElement.style.width = imgElement.naturalWidth * 2.5/4 + "px"
+                imgElement.style.height = imgElement.naturalHeight * 2.5/4 + "px"
+            }
+
+
+        imageContainer.appendChild(imgElement);
+        console.log("img", imgElement)
+
         }
     }
 });
@@ -278,7 +280,7 @@ function make_clickable_tabs() {
     tab.title = tab.textContent
         tab.addEventListener('click', function() {
             if (previous_tab) {
-                previous_tab.style.backgroundColor = '#d4ffff';
+                previous_tab.style.backgroundColor = 'gainsboro';
                 previous_tab.style.color = 'black';
             }
             // make tabs appeared as selected

@@ -74,12 +74,8 @@ role_selector = document.getElementById('role-input');
 select_role(role_selector, role)
 
 // input file
-input_file_button = document.getElementById('file-input-button');
-file_browse_button = document.getElementById('file-input-element');
+make_input_file_button_functional()
 
-input_file_button.addEventListener('click', function() {
-    file_browse_button.click();
-});
 
 
 // Remember context
@@ -216,7 +212,7 @@ function sendThroughClick(event) {
 
             const final_response_text = response_text + "\nTokens used : " + tokens_used.toString();
             document.getElementById('load-animation').style.display = 'none';
-            createDivResponse(final_response_text)
+            createDivResponse(final_response_text, current_chats_data.length - 1)
             console.log(data['success']['response'])
             console.log(messages)
             i+=1;
@@ -229,18 +225,7 @@ function sendThroughClick(event) {
 //            else {
 //
 //            }
-            console.log("tabname given", tabName);
-            fetch('/store-chats-history/', {
-                    method: 'POST',
-                    body: JSON.stringify({"prompt_response_dict": current_chats_data,
-                                           "tab_name": tabName})
-                })
-                .then(response => response.json())
-                .then(chats_data => {
-                // operations on data
-                console.log('Success:', chats_data);
-                })
-                .catch(error => console.error('Error:', error));
+            store_chats_history()
 
           })
           .catch(error => console.error('Error:', error));
@@ -298,15 +283,44 @@ function store_chat_tabs() {
                 .catch(error => console.error('Error:', error));
 }
 
+function make_input_file_button_functional() {
+input_file_button = document.getElementById('file-input-button');
+file_browse_button = document.getElementById('file-input-element');
+const send_button = document.getElementById('submit-button')
+input_file_button.addEventListener('click', function() {
+    file_browse_button.click();
+});
+
+const input_img = document.getElementById('file-input-image')
+input_file_button.addEventListener('mouseenter', function() {
+    input_img.src = staticUrls.inputImageButtonHover
+})
+input_file_button.addEventListener('mouseleave', function() {
+    input_img.src = staticUrls.inputImageButton
+})
+
+const submit_image = document.getElementById('submit-image')
+send_button.addEventListener('mouseenter', function() {
+    submit_image.src = staticUrls.sendButtonHover
+})
+send_button.addEventListener('mouseleave', function() {
+    submit_image.src = staticUrls.sendButton
+})
+}
+
+var tabs;
+var tab_clicked_index;
+
 function make_clickable_tabs() {
     let previous_tab = null;
-    const tab_list = document.getElementById('file-select-sidebar');
-    const tabs = Array.from(tab_list.children);
-    tabs.forEach(function(tab) {
+    var tab_list = document.getElementById('file-select-sidebar');
+    tabs = Array.from(tab_list.children);
+    tabs.forEach(function(tab, index) {
+    tab_clicked_index = index;
     tab.title = tab.textContent
         tab.addEventListener('click', function() {
             if (previous_tab) {
-                previous_tab.style.backgroundColor = '#d4ffff';
+                previous_tab.style.backgroundColor = 'gainsboro';
                 previous_tab.style.color = 'black';
             }
             // make tabs appeared as selected
@@ -334,9 +348,9 @@ function make_clickable_tabs() {
             console.log('Success', chats_history)
             current_chats_data = chats_history['success'];
 
-            current_chats_data.forEach(function(prompt_response) {
+            current_chats_data.forEach(function(prompt_response, index) {
                 createDivPrompt(prompt_response['prompt'])
-                createDivResponse(prompt_response['response'])
+                createDivResponse(prompt_response['response'], index)
                 tabName = tab.textContent;
                 console.log(prompt_response)
             })
@@ -347,7 +361,7 @@ function make_clickable_tabs() {
                     {"role": "assistant", "content": current_chats_data[len_current_chats - 1]['response']}
                     ]
             console.log("previous prompt response", messages[1]['content'], messages[2]['content'])
-            console.log(current_chats_data)
+            console.log("current_chats", current_chats_data)
             console.log(tabName)
         })
 
@@ -362,7 +376,8 @@ function give_date_as_tab_name() {
     console.log("tabname : ", tabName)
 }
 
-}
+// removed from here
+
 
 
 
@@ -475,6 +490,20 @@ chatModelArray.forEach(function(model) {
     });
 }
 
+function store_chats_history() {
+            console.log("tabname given", tabName);
+            fetch('/store-chats-history/', {
+                    method: 'POST',
+                    body: JSON.stringify({"prompt_response_dict": current_chats_data,
+                                           "tab_name": tabName})
+                })
+                .then(response => response.json())
+                .then(chats_data => {
+                // operations on data
+                console.log('Success:', chats_data);
+                })
+                .catch(error => console.error('Error:', error));
+}
 
 // Creating divs
 function createDivPrompt(userPrompt) {
@@ -497,7 +526,7 @@ function createDivPrompt(userPrompt) {
     prompt_text.textContent = userPrompt;
 }
 
-function createDivResponse(response) {
+function createDivResponse(response, index) {
 
     // get main div
     const container_prompt_responses = document.getElementById('prompt-responses')
@@ -512,9 +541,97 @@ function createDivResponse(response) {
 
     // add child to it
     responseDiv.appendChild(response_text);
-    container_prompt_responses.appendChild(responseDiv);
+//    container_prompt_responses.appendChild(responseDiv);
 
     renderMarkdown(response, response_text);
-//    add text to prompt text element
-//    response_text.innerText = response;
+
+    // creating options div
+    let options = document.createElement('div');
+    options.setAttribute('class', 'text-options');
+
+    // options for option div
+    const copy_button = document.createElement('img')
+    const delete_button = document.createElement('img')
+    const download_button = document.createElement('img')
+
+    copy_button.setAttribute('src', staticUrls.copyButton)
+    delete_button.setAttribute('src', staticUrls.deleteButton)
+    download_button.setAttribute('src', staticUrls.downloadButton)
+
+    copy_button.setAttribute('class', 'img-option')
+    copy_button.setAttribute('title', 'Copy Response')
+    delete_button.setAttribute('class', 'img-option')
+    delete_button.setAttribute('title', 'Delete Response')
+    download_button.setAttribute('class', 'img-option')
+    download_button.setAttribute('title', 'Download as PDF')
+
+    copy_button.addEventListener('mouseenter', function() {
+        copy_button.setAttribute('src', staticUrls.copyButtonHover)
+    })
+    copy_button.addEventListener('mouseleave', function() {
+        copy_button.setAttribute('src', staticUrls.copyButton)
+    })
+    delete_button.addEventListener('mouseenter', function() {
+        delete_button.setAttribute('src', staticUrls.deleteButtonHover)
+    })
+    delete_button.addEventListener('mouseleave', function() {
+        delete_button.setAttribute('src', staticUrls.deleteButton)
+    })
+    download_button.addEventListener('mouseenter', function() {
+        download_button.setAttribute('src', staticUrls.downloadButtonHover)
+    })
+    download_button.addEventListener('mouseleave', function() {
+        download_button.setAttribute('src', staticUrls.downloadButton)
+    })
+
+
+    // add copy button functionality
+    copy_button.addEventListener('click', function() {
+        copyTextToClipboard(response)
+    })
+
+    delete_button.addEventListener('click', function() {
+        current_chats_data.splice(0, 1) // remove 1 item at index
+        console.log("current chats data", current_chats_data)
+        store_chats_history()
+        tabs[tab_clicked_index].dispatchEvent(new MouseEvent('click'));
+    })
+
+    options.appendChild(copy_button)
+    options.appendChild(download_button)
+    options.appendChild(delete_button)
+
+    responseDiv.appendChild(options)
+
+    container_prompt_responses.appendChild(responseDiv)
+
+    responseDiv.addEventListener('mouseenter', function() {
+        options.style.display = 'inline'
+    })
+    responseDiv.addEventListener('mouseleave', function() {
+        options.style.display = 'block'
+    })
+
+    options.addEventListener('mouseenter', function() {
+        options.style.display = 'block'
+        options.style.opacity = 1
+    })
+    options.addEventListener('mouseleave', function() {
+        options.style.display = 'none'
+        options.style.opacity = 0.7
+    })
+
+
+
+
+}
+
+function copyTextToClipboard(response_text) {
+    navigator.clipboard.writeText(response_text).then(function() {
+        console.log('Text copied to clipboard');
+    }).catch(function(error) {
+        console.error('Failed to copy text: ', error);
+    });
+}
+
 }

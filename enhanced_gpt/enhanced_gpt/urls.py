@@ -26,10 +26,7 @@ urlpatterns = [
     # endpoint urls
     path('', views.index, name='index'),
     path('imageGenerator/', views.image_generator, name="image-gen"),
-    path('history/', views.chat_history, name="chat-history"),
-    path('imageGenerator/history/', views.image_generator_history, name="image-gen-his"),
     path('pdfReader/', views.pdf_reader, name="pdf-reader"),
-    path('pdfReader/history', views.pdf_reader_history, name="pdf-reader-his"),
     path('receive-data/', views.receive_data, name='receive-data'),
     path('receive-img-response/', views.receive_image_response, name='receive-image'),
 
