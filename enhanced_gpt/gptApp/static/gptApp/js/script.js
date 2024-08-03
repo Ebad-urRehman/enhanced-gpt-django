@@ -1,5 +1,5 @@
+import {SidebarSelectbar, AddSidebarSlider, SidebarInput, AddCheckboxSidebar} from './functions.js';
 window.onload = function () {
-
 var tabList = []
 var current_chats_data = []
 
@@ -25,18 +25,25 @@ fetch('/load-chat-tabs/', {
 
 make_chat_button_functional()
 
-// select max_tokens
-tokens = 2000;
-const tokens_slider = document.getElementById('slider-tokens')
-var current_tokens_value = tokens_slider.value
-var tokens_max = tokens_slider.max
-change_tokens(tokens_slider, current_tokens_value)
+// adding sidebar elements
+const role = new SidebarInput("role", "role", "Enter the Role", "Current Role : ", "You are a Helpful Assistant");
+role.updateInput(role.input);
 
-// choose temperature
-temperature_slider = document.getElementById('slider-temp')
-var current_temp_value = temperature_slider.value
-var temperature_max = temperature_slider.max
-change_temperature(temperature_slider, current_temp_value, temperature_max)
+const tokens = new AddSidebarSlider("tokens", "tokens", 0, 4000, 2000, 100, "Max Tokens : ");
+tokens.updateValue();
+
+const temperature = new AddSidebarSlider("temperature", "temperature", 0, 1, 0.5, 0.05, "Temperature : ");
+temperature.updateValue();
+
+const frequency = new AddSidebarSlider("frequency", "frequency", -2, 2, 1, 0.1, "Frequency : ");
+frequency.updateValue();
+
+const responses = new AddSidebarSlider("responses", "responses", 1, 5, 1, 1, "Responses : ");
+responses.updateValue();
+
+const model = new SidebarSelectbar("Image Selector", "select-img", ['gpt-3.5-turbo-0125', 'gpt-4-turbo', 'gpt-4', 'gpt-4o'], "Select Model", 'gpt-3.5-turbo-0125');
+const rememberContext = new AddCheckboxSidebar("remember-context", "remember-context", ". Remember Context", false);
+const setStream = new AddCheckboxSidebar("set-stream", "stream", ". Stream", false);
 
 
 const fileInput = document.getElementById('file-input-element');
@@ -68,49 +75,12 @@ fileInput.addEventListener('change', function() {
     }
 });
 
-// Role
-var role = 'You are a helpful assistant.';
-role_selector = document.getElementById('role-input');
-select_role(role_selector, role)
-
 // input file
 make_input_file_button_functional()
 
-
-
-// Remember context
-var rememberContext = true;
-var rememberContextElement = document.getElementById('remember-context');
-set_remember_context(rememberContext, rememberContextElement)
-
-// set stream
-var setStream = true;
-var setStreamElement = document.getElementById('stream');
-set_stream(setStreamElement, setStream)
-
-// choose frequency
-const frequency_slider = document.getElementById('slider-frequency')
-var current_frequency_value = frequency_slider.value
-var frequency_max = frequency_slider.max
-change_frequency(frequency_slider, current_frequency_value, frequency_max)
-
-
-// choose no of responses
-const response_no_slider = document.getElementById('slider-no-responses')
-var current_res_no_value = response_no_slider.value
-var response_no_max = response_no_slider.max
-change_response_no(response_no_slider, response_no_max)
-
-
-
-//select text-model
-var selectedModel = 'gpt-3.5-turbo-0125';
-change_selected_model(selectedModel)
-
-// prompt-responses transfer
-promptResponseList = []
+const promptResponseList = []
 var prompt = '';
-response_no = 0;
+let response_no = 0;
 var messages = null;
 
 // get the prompt
@@ -123,11 +93,11 @@ promptElement.addEventListener('keydown', function(event) {
         sendThroughClick(event);
     }
 });
-storedData = null;
-i=0;
+let storedData = null;
+let i=0;
 
 // history tabs
-show_history_button = document.getElementById('hover-button-history-bar')
+const show_history_button = document.getElementById('hover-button-history-bar')
 show_history_button.addEventListener('mouseover', function() {
     document.getElementById('history-bar').style.width = '250px';
     show_history_button.style.display = 'none';
@@ -165,13 +135,13 @@ function sendThroughClick(event) {
             // Create FormData object and append variables
             const dataToSend = {
                 'messages': messages,
-                'model': selectedModel,
-                'tokens': current_tokens_value,
-                'frequency': current_frequency_value,
-                'no-responses': current_res_no_value,
-                'temperature': current_temp_value,
-                'remember_context': rememberContext,
-                'stream': setStream,
+                'model': model.selected,
+                'tokens': tokens.currentValue,
+                'frequency': frequency.currentValue,
+                'no-responses': responses.currentValue,
+                'temperature': temperature.currentValue,
+                'remember_context': rememberContext.Checked,
+                'stream': setStream.Checked,
                 'tab-name': tabName
             }
 //            console.log(messages)
@@ -217,34 +187,12 @@ function sendThroughClick(event) {
             console.log(messages)
             i+=1;
             console.log(current_chats_data)
-            // storing chats data to database
-//            if (rememberContext) {
-//                last_message_list = current_chats_data.length - 1;
-//
-//            }
-//            else {
-//
-//            }
+
             store_chats_history()
 
           })
           .catch(error => console.error('Error:', error));
 }
-
-//function loadTabContent() {
-////    loadTabContent(messages)
-//prompt_response_list = messages.forEach(function(list) {
-//    list.forEach(function(dict) {
-//        if (dict.role=== "user") {
-//            createDivPrompt(dict['content']);
-//        }
-//        else if (dict.role === "assistant") {
-//            createDivResponse(dict['content']);
-//        }
-//    })
-//})
-//}
-
 
 // functions
 function store_chat_tabs() {
@@ -284,8 +232,8 @@ function store_chat_tabs() {
 }
 
 function make_input_file_button_functional() {
-input_file_button = document.getElementById('file-input-button');
-file_browse_button = document.getElementById('file-input-element');
+const input_file_button = document.getElementById('file-input-button');
+const file_browse_button = document.getElementById('file-input-element');
 const send_button = document.getElementById('submit-button')
 input_file_button.addEventListener('click', function() {
     file_browse_button.click();
@@ -376,10 +324,6 @@ function give_date_as_tab_name() {
     console.log("tabname : ", tabName)
 }
 
-// removed from here
-
-
-
 
 function load_chat_tabs(tabs_list, sidebar) {
         for (let i = tabs_list.length - 1; i >= 0; i--) {
@@ -395,99 +339,6 @@ function make_chat_button_functional() {
     new_chat_button.addEventListener('click', function() {
     window.location.href = '';
 })
-}
-
-function change_tokens(tokens_slider, current_tokens_value) {
-    tokens_slider.addEventListener('change', function() {
-        current_tokens_value = tokens_slider.value
-        tokens_max = tokens_slider.max
-        document.getElementById('slider-value').innerHTML = current_tokens_value + '/' + tokens_max;
-        console.log("Token value : ", current_tokens_value)
-});
-}
-
-function change_temperature(temperature_slider, current_temp_value, temperature_max) {
-    temperature_slider.addEventListener('change', function() {
-        current_temp_value = temperature_slider.value
-        temperature_max = temperature_slider.max
-        document.getElementById('slider-val').innerHTML = current_temp_value + '/' + temperature_max;
-        console.log("Token value : ", current_temp_value)
-});
-}
-
-function select_role(role_selector, role) {
-    role_selector.addEventListener('keydown', function() {
-        if (event.key ==='Enter') {
-            role = role_selector.value;
-            if (role != "") {
-            document.getElementById('role-info').textContent = role;
-            document.getElementById('role-input').value = "";
-            console.log(role)
-            }
-        }
-});
-}
-// ajax
-function set_remember_context(rememberContext, rememberContextElement) {
-rememberContextElement.addEventListener('click', function() {
-    checked = rememberContextElement.checked;
-    if (checked == true) {
-        rememberContext = true;
-    }
-    else {
-        rememberContext = false;
-    }
-    console.log(rememberContext);
-});
-}
-
-function set_stream(setStreamElement, setStream) {
-setStreamElement.addEventListener('click', function() {
-    checked = setStreamElement.checked;
-    if (checked == true) {
-        setStream = true;
-    }
-    else {
-        setStream = false;
-    }
-    console.log(setStream);
-});
-}
-
-function change_frequency(frequency_slider, current_frequency_value, frequency_max) {
-frequency_slider.addEventListener('change', function() {
-    current_frequency_value = frequency_slider.value
-    document.getElementById('slider-freq-val').innerHTML = current_frequency_value + '/' + frequency_max;
-    console.log("Frequency value : ", current_frequency_value)
-    });
-}
-
-function change_response_no(response_no_slider, response_no_max) {
-response_no_slider.addEventListener('change', function() {
-    current_res_no_value = response_no_slider.value
-    document.getElementById('slider-res-no-val').innerHTML = current_res_no_value + '/' + response_no_max;
-    console.log("Response no value : ", current_res_no_value)
-});
-}
-
-function change_selected_model(selectedModel) {
-modelDict = {"GPT-3.5-turbo": "gpt-3.5-turbo-0125",
-            "GPT-4-turbo" : "gpt-4-turbo",
-            "GPT-4" : "gpt-4",
-            "GPT-4o": "gpt-4o"}
-
-chatModelsSelectBox = document.getElementsByClassName('chatModelSelect');
-chatModelArray = Array.from(chatModelsSelectBox);
-
-chatModelArray.forEach(function(model) {
-        model.addEventListener('click', function() {
-            if (model.textContent in modelDict) {
-                selectedModel = modelDict[model.textContent];
-                document.getElementById('select-model-button').textContent = model.textContent;
-                console.log(model.textContent, selectedModel)
-            }
-        })
-    });
 }
 
 function store_chats_history() {

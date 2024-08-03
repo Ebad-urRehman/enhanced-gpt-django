@@ -794,4 +794,57 @@ full_screen_button.addEventListener('click', function() {
 //    response_text.innerText = response;
 }
 
+function AddSidebarSlider(name, id, minValue, maxValue, labelText, currentValue, defaultValueText) {
+    console.log('working');
+    // attributes
+    this.name = name;
+    this.minValue = minValue;
+    this.maxValue = maxValue;
+    this.labelText = labelText;
+    this.id = id;
+    this.defaultValueText = defaultValueText;
+
+    // get
+    const sidebar = document.getElementById('sidebar');
+
+    // label
+    // create
+    const sliderDiv = document.createElement('div');
+    const slider = document.createElement('input');
+    const label = document.createElement('label');
+
+
+    // setting attributes
+    sliderDiv.setAttribute('class', 'slider-container');
+//    slider.setAttribute('class', '');
+    label.setAttribute('for', `${this.name}`);
+    label.textContent = `${this.labelText}`;
+
+    // input
+    const input = document.createElement('input');
+    input.setAttribute('type', 'range');
+    input.setAttribute('id', `${id}`);
+    input.setAttribute('name', `${id}`);
+    input.setAttribute('min', minValue);
+    input.setAttribute('max', maxValue);
+    input.setAttribute('value', currentValue);
+
+    // info
+    const infoTextPara = document.createElement('p');
+    const span = document.createElement('span');
+    span.id = 'slider-value';
+    span.textContent = this.defaultValueText;
+
+    // appending
+    infoTextPara.append(span);
+
+    sliderDiv.append(label);
+    sliderDiv.append(input);
+    sliderDiv.append(infoTextPara);
+
+    sidebar.append(sliderDiv);
+
+}
+new AddSidebarSlider("frequencyy", "idd", 1, 100, "Frequency : ", 50, 'Value : 50/100');
+
 }
